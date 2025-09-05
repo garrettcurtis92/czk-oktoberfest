@@ -2,6 +2,7 @@ import { pgTable, serial, varchar, integer, timestamp, pgEnum } from "drizzle-or
 
 export const colorEnum = pgEnum("team_color", ["red","orange","yellow","green","blue","purple"]);
 export const eventType = pgEnum("event_type", ["game","dinner","social"]);
+export const eventStatus = pgEnum("event_status", ["scheduled","live","paused","finished"]);
 
 export const teams = pgTable("teams", {
   id: serial("id").primaryKey(),
@@ -19,6 +20,7 @@ export const events = pgTable("events", {
   locationLabel: varchar("location_label", { length: 96 }),
   type: eventType("type").notNull(),
   basePoints: integer("base_points").default(0).notNull(),
+  status: eventStatus("status").default("scheduled").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

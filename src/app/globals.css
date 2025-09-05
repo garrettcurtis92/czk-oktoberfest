@@ -4,3 +4,14 @@
 
 :root { color-scheme: light dark; }
 body { background: #FFF5E9; color: #1e2230; }
+
+
+/* Override shadcn dropdowns to always look like cards in light mode */
+[data-radix-popper-content-wrapper] > div[data-state][data-side] {
+  @apply bg-white text-gray-900 shadow-xl border border-gray-200 rounded-xl;
+}
+
+/* Optional: style for dark mode toggle later */
+.dark [data-radix-popper-content-wrapper] > div[data-state][data-side] {
+  @apply bg-neutral-900 text-gray-100 border border-gray-700;
+}

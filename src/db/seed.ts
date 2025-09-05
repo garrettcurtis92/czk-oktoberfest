@@ -5,6 +5,8 @@ import { db } from "./index";
 import { teams, events } from "./schema";
 
 async function main() {
+  await db.delete(events);
+  await db.delete(teams);
   await db.insert(teams).values([
     { name: "Red Team", color: "red" },
     { name: "Orange Team", color: "orange" },
