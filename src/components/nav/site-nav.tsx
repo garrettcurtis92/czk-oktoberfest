@@ -67,7 +67,7 @@ export function BottomTabs() {
   return (
     <>
       {/* bottom nav */}
-      <nav className="fixed inset-x-0 bottom-2 z-30 mx-auto w-full max-w-3xl px-4">
+      <nav className="fixed inset-x-0 bottom-6 z-30 mx-auto w-full max-w-3xl px-4">
         <div className="rounded-3xl bg-white/80 backdrop-blur shadow-lg border border-black/5">
           <div className="flex items-center justify-between gap-1 p-2">
             {items.map((it) => (
