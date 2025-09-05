@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { CalendarDays, Home, Trophy, Images, Menu } from "lucide-react";
 import { useState } from "react";
@@ -31,26 +32,26 @@ function TabLink({
     </Link>
   );
 }
-
 export function SiteHeader() {
-  const pathname = usePathname();
-  const title =
-    pathname === "/schedule" ? "Schedule" :
-    pathname === "/" ? "Home" :
-    pathname.startsWith("/admin") ? "Admin" :
-    "CZK Oktoberfest";
-
   return (
     <header className="sticky top-0 z-20 bg-sand/80 backdrop-blur">
-      <div className="mx-auto max-w-3xl px-4 py-3">
-        <div className="flex items-center justify-between">
-          <Link href="/" className="font-display text-xl">CZK Oktoberfest</Link>
-          <span className="text-sm opacity-70">{title}</span>
-        </div>
+      <div className="mx-auto max-w-3xl px-4 py-3 flex items-center justify-center">
+        <Link href="/" className="block">
+          <Image
+            src="/logo.svg"
+            alt="Oktoberfest logo"
+            width={48}
+            height={48}
+            className="rounded-xl shadow"
+            priority
+          />
+        </Link>
       </div>
     </header>
   );
 }
+
+
 
 export function BottomTabs() {
   const pathname = usePathname();
