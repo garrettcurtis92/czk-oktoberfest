@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, integer, timestamp, text, pgEnum, boolean } from "drizzle-orm/pg-core";
+import { pgTable, serial, varchar, integer, timestamp, pgEnum } from "drizzle-orm/pg-core";
 
 export const colorEnum = pgEnum("team_color", ["red","orange","yellow","green","blue","purple"]);
 export const eventType = pgEnum("event_type", ["game","dinner","social"]);
