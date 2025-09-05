@@ -1,7 +1,7 @@
 // src/app/schedule/page.tsx
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Clock, MapPin, Trophy, Gamepad2, Utensils, PartyPopper } from "lucide-react";
@@ -98,12 +98,13 @@ export default function SchedulePage() {
     return ta - tb;
   });
 
-  // NEW: group in sorted order (preserves day order)
-  const daysMap = new Map<string, EventRow[]>();
-  for (const e of sorted) {
-    daysMap.set(e.day, [...(daysMap.get(e.day) ?? []), e]);
-  }
-  const dayEntries = [...daysMap.entries()] as [string, EventRow[]][];
+  const dayEntries = useMemo(() => {
+    const daysMap = new Map<string, EventRow[]>();
+    for (const e of sorted) {
+      daysMap.set(e.day, [...(daysMap.get(e.day) ?? []), e]);
+    }
+    return [...daysMap.entries()] as [string, EventRow[]][];
+  }, [sorted]);
 
   // NEW: control Tabs selection so it sets after data loads
   const [activeDay, setActiveDay] = useState<string | null>(null);

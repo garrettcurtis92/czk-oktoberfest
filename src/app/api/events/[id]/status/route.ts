@@ -9,7 +9,8 @@ function isAdmin(req: Request) {
   return key && process.env.ADMIN_KEY && key === process.env.ADMIN_KEY;
 }
 
-export async function POST(req: Request, { params }: { params: { id: string } }) {
+export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   if (!isAdmin(req)) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
@@ -22,6 +23,6 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     await db.update(events).set({ status: "scheduled" }).where(eq(events.status, "live"));
   }
 
-  await db.update(events).set({ status }).where(eq(events.id, Number(params.id)));
+  await db.update(events).set({ status }).where(eq(events.id, Number(id)));
   return NextResponse.json({ ok: true });
 }
