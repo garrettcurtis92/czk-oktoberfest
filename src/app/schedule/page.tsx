@@ -87,21 +87,42 @@ function formatCountdown(ms: number) {
 }
 
 
-function LiveProgress({ ev }: { ev: EventRow }) {
+function LiveProgress({ ev, tick }: { ev: EventRow; tick?: number }) {
   if (!ev.startTime || !ev.endTime) return null;
-  const [startH, startM] = ev.startTime.split(":").map(Number);
-  const [endH, endM] = ev.endTime.split(":").map(Number);
-  const start = new Date(ev.day + "T00:00:00");
-  start.setHours(startH || 0, startM || 0, 0, 0);
-  const end = new Date(ev.day + "T00:00:00");
-  end.setHours(endH || 0, endM || 0, 0, 0);
 
+  const [sH, sM] = ev.startTime.split(":").map(Number);
+  const [eH, eM] = ev.endTime.split(":").map(Number);
+
+  const start = new Date(ev.day + "T00:00:00");
+  start.setHours(sH || 0, sM || 0, 0, 0);
+  const end = new Date(ev.day + "T00:00:00");
+  end.setHours(eH || 0, eM || 0, 0, 0);
+
+  const total = +end - +start;
+  if (total <= 0) return null; // avoid divide-by-zero / bad data
+
+  // Recomputed on every render; 'tick' ensures we re-render periodically.
   const now = Date.now();
-  const pct = Math.min(100, Math.max(0, ((now - +start) / (+end - +start)) * 100));
+  const pct = Math.min(100, Math.max(0, ((now - +start) / total) * 100));
+
+  const barClass =
+    ev.status === "paused"
+      ? "h-full bg-yellow-400/80"
+      : "h-full bg-team-red/70 transition-[width] duration-300";
 
   return (
-    <div className="absolute left-0 right-0 top-0 h-1 bg-black/5">
-      <div className="h-full bg-team-red/70 transition-[width]" style={{ width: `${pct}%` }} />
+    <div
+      className="absolute left-0 right-0 top-0 h-1 bg-black/5"
+      aria-label="Live progress"
+      role="progressbar"
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuenow={Math.round(pct)}
+    >
+      <div
+        className={barClass}
+        style={{ width: `${pct}%` }}
+      />
     </div>
   );
 }
@@ -167,6 +188,13 @@ useEffect(() => {
   }
 }, [liveId]);
 
+// Tick for live progress updates
+const [tick, setTick] = useState(0);
+useEffect(() => {
+  const id = setInterval(() => setTick((t) => t + 1), 5000); // Update every 5 seconds
+  return () => clearInterval(id);
+}, []);
+
 
   // active tab (prefer live day)
   const [activeDay, setActiveDay] = useState<string>("");
@@ -223,7 +251,9 @@ useEffect(() => {
   <div className="sticky top-[64px] z-10 -mx-4 px-4">
     <button
       onClick={() => jumpTo(live.day, live.id)}
-      className="mx-auto flex items-center gap-2 rounded-full bg-team-red text-white px-3 py-1.5 shadow"
+      className={`mx-auto flex items-center gap-2 rounded-full text-white px-3 py-1.5 shadow ${
+        live.status === "paused" ? "bg-yellow-500" : "bg-team-red"
+      }`}
     >
       <span className="inline-block size-2 rounded-full bg-white animate-pulse" />
       <span className="text-sm font-medium">Now Playing:</span>
@@ -280,7 +310,7 @@ useEffect(() => {
       }
       transition={{ duration: ev.id === shakeLiveId ? 0.6 : 0.15, delay: i * 0.03 }}
     >
-      <EventCard ev={ev} />
+      <EventCard ev={ev} tick={tick} />
     </motion.div>
   ))}
 
@@ -293,7 +323,7 @@ useEffect(() => {
   );
 }
 
-function EventCard({ ev }: { ev: EventRow }) {
+function EventCard({ ev, tick }: { ev: EventRow; tick?: number }) {
   const isLive = ev.status === "live";
   return (
     <div
@@ -303,7 +333,7 @@ function EventCard({ ev }: { ev: EventRow }) {
         isLive && "ring-2 ring-team-red/70"
       )}
     >
-      {isLive && <LiveProgress ev={ev} />}
+      {isLive && <LiveProgress ev={ev} tick={tick} />}
 
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-2 flex-1">
