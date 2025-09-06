@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { CalendarDays, Home, Trophy, Images, Menu } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils"; // if you don’t have cn, replace with a simple join
 
 function TabLink({
@@ -57,57 +57,73 @@ export function BottomTabs() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
+  // Close the menu whenever the route changes
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
   const items = [
     { href: "/", label: "Home", icon: <Home className="h-5 w-5" /> },
     { href: "/schedule", label: "Schedule", icon: <CalendarDays className="h-5 w-5" /> },
-    { href: "/leaderboard", label: "Scores", icon: <Trophy className="h-5 w-5" /> }, // optional alias to "/"
-    { href: "/gallery", label: "Gallery", icon: <Images className="h-5 w-5" /> },    // placeholder
+    { href: "/leaderboard", label: "Scores", icon: <Trophy className="h-5 w-5" /> },
+    { href: "/gallery", label: "Gallery", icon: <Images className="h-5 w-5" /> },
   ];
 
   return (
     <>
-      {/* bottom nav */}
       <nav className="fixed inset-x-0 bottom-6 z-30 mx-auto w-full max-w-3xl px-4">
         <div className="rounded-3xl bg-white/80 backdrop-blur shadow-lg border border-black/5">
-          <div className="flex items-center justify-between gap-1 p-2">
+          <div className="relative flex items-center justify-between gap-1 p-2">
             {items.map((it) => (
               <TabLink
                 key={it.href}
                 {...it}
-                active={
-                  it.href === "/"
-                    ? pathname === "/"
-                    : pathname.startsWith(it.href)
-                }
+                active={it.href === "/" ? pathname === "/" : pathname.startsWith(it.href)}
               />
             ))}
 
-            {/* overflow menu for admin links */}
+            {/* trigger */}
             <button
               onClick={() => setOpen((v) => !v)}
               className="ml-1 flex flex-col items-center justify-center rounded-2xl px-3 py-2 text-xs text-charcoal/70"
               aria-expanded={open}
               aria-haspopup="menu"
+              aria-controls="more-menu"
             >
               <Menu className="h-5 w-5" />
               <span className="mt-1">More</span>
             </button>
-          </div>
 
-          {open && (
-            <div
-              role="menu"
-              className="mx-2 mb-2 rounded-2xl border border-black/5 bg-white shadow-lg"
-            >
-              <Link href="/admin/live" className="block px-4 py-2 text-sm">Admin · Live</Link>
-              <Link href="/admin/score" className="block px-4 py-2 text-sm">Admin · Scoring</Link>
-            </div>
-          )}
+            {/* anchored menu */}
+            {open && (
+              <div
+                id="more-menu"
+                role="menu"
+                className="absolute right-2 -top-2 translate-y-[-100%] z-30 rounded-2xl border border-black/5 bg-white shadow-lg"
+              >
+                <Link href="/admin/live" onClick={() => setOpen(false)} className="block px-4 py-2 text-sm">
+                  Admin · Live
+                </Link>
+                <Link href="/admin/score" onClick={() => setOpen(false)} className="block px-4 py-2 text-sm">
+                  Admin · Scoring
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
       </nav>
 
-      {/* spacer to avoid content underlap */}
+      {/* backdrop to close when tapping outside */}
+      {open && (
+        <button
+          aria-hidden
+          onClick={() => setOpen(false)}
+          className="fixed inset-0 z-20 bg-transparent"
+        />
+      )}
+
       <div className="h-20 md:h-0" />
     </>
   );
 }
+
