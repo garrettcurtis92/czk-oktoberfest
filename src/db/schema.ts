@@ -26,8 +26,9 @@ export const events = pgTable("events", {
 
 export const scores = pgTable("scores", {
   id: serial("id").primaryKey(),
-  eventId: integer("event_id").references(() => events.id).notNull(),
-  teamId: integer("team_id").references(() => teams.id).notNull(),
+  eventId: integer("event_id").notNull(),
+  teamId: integer("team_id").notNull(),
   points: integer("points").notNull(),
+  note: varchar("note", { length: 200 }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

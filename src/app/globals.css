@@ -2,16 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { color-scheme: light dark; }
+:root { 
+  color-scheme: light dark;
+  
+  /* Team colors as CSS custom properties for dynamic styling */
+  --tw-color-team-red: #E45757;
+  --tw-color-team-orange: #F39B2B;
+  --tw-color-team-yellow: #F3D23B;
+  --tw-color-team-green: #36B37E;
+  --tw-color-team-blue: #2F80ED;
+  --tw-color-team-purple: #8C59D9;
+}
+
 body { background: #FFF5E9; color: #1e2230; }
 
 
 /* Override shadcn dropdowns to always look like cards in light mode */
 [data-radix-popper-content-wrapper] > div[data-state][data-side] {
-  @apply bg-white text-gray-900 shadow-xl border border-gray-200 rounded-xl;
+  background: white;
+  color: rgb(17 24 39);
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  border: 1px solid rgb(229 231 235);
+  border-radius: 0.75rem;
 }
 
 /* Optional: style for dark mode toggle later */
 .dark [data-radix-popper-content-wrapper] > div[data-state][data-side] {
-  @apply bg-neutral-900 text-gray-100 border border-gray-700;
+  background: rgb(23 23 23);
+  color: rgb(243 244 246);
+  border: 1px solid rgb(55 65 81);
 }
