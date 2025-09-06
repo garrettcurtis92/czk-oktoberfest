@@ -1,7 +1,7 @@
 // src/app/schedule/page.tsx
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Clock, MapPin, Trophy, Gamepad2, Utensils, PartyPopper } from "lucide-react";
@@ -32,6 +32,10 @@ const typeIcon: Record<EventRow["type"], React.JSX.Element> = {
   dinner: <Utensils className="h-4 w-4" />,
   social: <PartyPopper className="h-4 w-4" />,
 };
+
+function cn(...classes: Array<string | false | null | undefined>) {
+  return classes.filter(Boolean).join(" ");
+}
 
 const statusPill: Record<NonNullable<EventRow["status"]> | "scheduled", string> = {
   scheduled: "bg-white/60",
@@ -64,7 +68,7 @@ function dateRange(rows: EventRow[]) {
   return sameMonth ? `${month} ${d1}–${d2}` : `${month} ${d1} – ${month2} ${d2}`;
 }
 
-// NEW: robust date helper
+// date helper
 function toDate(day: string, hm?: string | null) {
   const d = new Date(day + "T00:00:00");
   if (hm) {
@@ -72,6 +76,34 @@ function toDate(day: string, hm?: string | null) {
     d.setHours(h ?? 0, m ?? 0, 0, 0);
   }
   return d;
+}
+
+// Format "starts in" countdown like "1h 12m" or "7m"
+function formatCountdown(ms: number) {
+  const s = Math.max(0, Math.floor(ms / 1000));
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  return h > 0 ? `${h}h ${m}m` : `${m}m`;
+}
+
+
+function LiveProgress({ ev }: { ev: EventRow }) {
+  if (!ev.startTime || !ev.endTime) return null;
+  const [startH, startM] = ev.startTime.split(":").map(Number);
+  const [endH, endM] = ev.endTime.split(":").map(Number);
+  const start = new Date(ev.day + "T00:00:00");
+  start.setHours(startH || 0, startM || 0, 0, 0);
+  const end = new Date(ev.day + "T00:00:00");
+  end.setHours(endH || 0, endM || 0, 0, 0);
+
+  const now = Date.now();
+  const pct = Math.min(100, Math.max(0, ((now - +start) / (+end - +start)) * 100));
+
+  return (
+    <div className="absolute left-0 right-0 top-0 h-1 bg-black/5">
+      <div className="h-full bg-team-red/70 transition-[width]" style={{ width: `${pct}%` }} />
+    </div>
+  );
 }
 
 export default function SchedulePage() {
@@ -85,19 +117,19 @@ export default function SchedulePage() {
         setRows(data);
         setLoading(false);
       })
-      .catch((err) => {
-        console.error("Failed to fetch events:", err);
-        setLoading(false);
-      });
+      .catch(() => setLoading(false));
   }, []);
 
-  // NEW: sort by (day + startTime) first
-  const sorted = [...rows].sort((a, b) => {
-    const ta = toDate(a.day, a.startTime ?? "99:99").getTime();
-    const tb = toDate(b.day, b.startTime ?? "99:99").getTime();
-    return ta - tb;
-  });
+  // sort by datetime
+  const sorted = useMemo(() => {
+    return [...rows].sort((a, b) => {
+      const ta = toDate(a.day, a.startTime ?? "99:99").getTime();
+      const tb = toDate(b.day, b.startTime ?? "99:99").getTime();
+      return ta - tb;
+    });
+  }, [rows]);
 
+  // group by day
   const dayEntries = useMemo(() => {
     const daysMap = new Map<string, EventRow[]>();
     for (const e of sorted) {
@@ -106,13 +138,55 @@ export default function SchedulePage() {
     return [...daysMap.entries()] as [string, EventRow[]][];
   }, [sorted]);
 
-  // NEW: control Tabs selection so it sets after data loads
-  const [activeDay, setActiveDay] = useState<string | null>(null);
+  // find live event (first match)
+  const live = useMemo(() => sorted.find((e) => e.status === "live") ?? null, [sorted]);
+
+  const upcoming = useMemo(() => {
+  const now = Date.now();
+  return (
+    sorted
+      .map((e) => ({ e, when: toDate(e.day, e.startTime ?? "23:59").getTime() }))
+      .filter((x) => x.when > now)
+      .sort((a, b) => a.when - b.when)[0]?.e ?? null
+  );
+}, [sorted]);
+const nextCountdown = useMemo(() => {
+  if (!upcoming) return "";
+  const when = toDate(upcoming.day, upcoming.startTime ?? "00:00").getTime();
+  return formatCountdown(when - Date.now());
+}, [upcoming]);
+
+
+const [shakeLiveId, setShakeLiveId] = useState<number | null>(null);
+const liveId = live?.id ?? null;
+useEffect(() => {
+  if (liveId) {
+    setShakeLiveId(liveId);
+    const t = setTimeout(() => setShakeLiveId(null), 900);
+    return () => clearTimeout(t);
+  }
+}, [liveId]);
+
+
+  // active tab (prefer live day)
+  const [activeDay, setActiveDay] = useState<string>("");
   useEffect(() => {
-    if (!activeDay && dayEntries.length) {
-      setActiveDay(dayEntries[0][0]); // first sorted day
+    if (dayEntries.length) {
+      setActiveDay(live?.day ?? dayEntries[0][0]);
     }
-  }, [activeDay, dayEntries]);
+  }, [live?.day, dayEntries]);
+
+  // jump to an event (switch tab, then smooth scroll)
+  const jumpTo = useCallback(
+    (day: string, id: number) => {
+      setActiveDay(day);
+      setTimeout(() => {
+        const el = document.getElementById(`event-${id}`);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 60);
+    },
+    [setActiveDay]
+  );
 
   if (loading) {
     return (
@@ -137,19 +211,55 @@ export default function SchedulePage() {
 
   return (
     <main className="p-4 space-y-4">
-      {/* Gradient Hero */}
+      {/* Hero */}
       <section className="rounded-3xl p-6 shadow bg-gradient-to-br from-white/80 via-white/60 to-white/30 backdrop-blur">
         <h1 className="text-3xl font-display tracking-tight">CZK Oktoberfest</h1>
         <p className="opacity-70">{dateRange(rows)} · On the Ranch</p>
       </section>
 
-      {/* Sticky Tabs */}
+      {/* Now Playing chip */}
+     {/* Live chip OR Next Up chip */}
+{live ? (
+  <div className="sticky top-[64px] z-10 -mx-4 px-4">
+    <button
+      onClick={() => jumpTo(live.day, live.id)}
+      className="mx-auto flex items-center gap-2 rounded-full bg-team-red text-white px-3 py-1.5 shadow"
+    >
+      <span className="inline-block size-2 rounded-full bg-white animate-pulse" />
+      <span className="text-sm font-medium">Now Playing:</span>
+      <span className="text-sm font-semibold truncate max-w-[50vw]">{live.title}</span>
+      {live.startTime && (
+        <span className="text-xs opacity-90">
+          · {live.startTime}
+          {live.endTime ? `–${live.endTime}` : ""}
+        </span>
+      )}
+    </button>
+  </div>
+) : upcoming ? (
+  <div className="sticky top-[64px] z-10 -mx-4 px-4">
+    <button
+      onClick={() => jumpTo(upcoming.day, upcoming.id)}
+      className="mx-auto flex items-center gap-2 rounded-full bg-team-blue text-white px-3 py-1.5 shadow"
+    >
+      <span className="inline-block size-2 rounded-full bg-white animate-pulse" />
+      <span className="text-sm font-medium">Next Up:</span>
+      <span className="text-sm font-semibold truncate max-w-[50vw]">{upcoming.title}</span>
+      {upcoming.startTime && (
+        <span className="text-xs opacity-90">· starts in {nextCountdown}</span>
+      )}
+    </button>
+  </div>
+) : null}
+
+
+      {/* Tabs */}
       <div className="sticky top-0 z-10 -mx-4 px-4 py-2 bg-sand/80 backdrop-blur">
         <div className="rounded-2xl p-2 bg-white/60 backdrop-blur shadow">
-          <Tabs value={activeDay ?? ""} onValueChange={setActiveDay} className="w-full">
+          <Tabs value={activeDay} onValueChange={setActiveDay} className="w-full">
             <TabsList className="grid w-full grid-cols-3 md:grid-cols-5 lg:grid-cols-7">
               {dayEntries.map(([day]) => (
-                <TabsTrigger key={day} value={day} className="text-xs md:text-sm">
+                <TabsTrigger key={day} value={day} className="text-xs md:text-sm" data-value={day}>
                   {fmtDayLabel(day)}
                 </TabsTrigger>
               ))}
@@ -158,17 +268,22 @@ export default function SchedulePage() {
             {dayEntries.map(([day, items]) => (
               <TabsContent key={day} value={day} className="mt-4 space-y-3">
                 {items
-                  .sort((a, b) => (a.startTime ?? "99:99").localeCompare(b.startTime ?? "99:99"))
-                  .map((ev, i) => (
-                    <motion.div
-                      key={ev.id}
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.15, delay: i * 0.03 }}
-                    >
-                      <EventCard ev={ev} />
-                    </motion.div>
-                  ))}
+  .sort((a, b) => (a.startTime ?? "99:99").localeCompare(b.startTime ?? "99:99"))
+  .map((ev, i) => (
+    <motion.div
+      key={ev.id}
+      initial={{ opacity: 0, y: 8 }}
+      animate={
+        ev.id === shakeLiveId
+          ? { x: [0, -4, 4, -3, 3, -2, 2, 0], opacity: 1, y: 0 }
+          : { opacity: 1, y: 0 }
+      }
+      transition={{ duration: ev.id === shakeLiveId ? 0.6 : 0.15, delay: i * 0.03 }}
+    >
+      <EventCard ev={ev} />
+    </motion.div>
+  ))}
+
               </TabsContent>
             ))}
           </Tabs>
@@ -179,8 +294,17 @@ export default function SchedulePage() {
 }
 
 function EventCard({ ev }: { ev: EventRow }) {
+  const isLive = ev.status === "live";
   return (
-    <div className="rounded-2xl p-4 bg-white/80 backdrop-blur shadow">
+    <div
+      id={`event-${ev.id}`}
+      className={cn(
+        "rounded-2xl p-4 bg-white/80 backdrop-blur shadow relative overflow-hidden",
+        isLive && "ring-2 ring-team-red/70"
+      )}
+    >
+      {isLive && <LiveProgress ev={ev} />}
+
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-2 flex-1">
           <div className="flex items-center gap-2">
