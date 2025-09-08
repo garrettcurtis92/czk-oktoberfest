@@ -3,124 +3,118 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 import { db } from "@/db";
-import { events as eventsTable } from "@/db/schema";
 import { sql } from "drizzle-orm";
-import NowPlayingBanner from "@/components/now-playing";
 
-type EventRow = {
-  id: number;
-  title: string;
-  locationLabel: string | null;
-  day: string;                 // "YYYY-MM-DD"
-  startTime: string | null;    // "HH:MM"
-  endTime: string | null;      // "HH:MM"
-  status?: "scheduled" | "live" | "paused" | "finished";
-};
-
+/** DB rows */
 type TeamRow = {
   id: number;
   name: string;
   color: "red" | "orange" | "yellow" | "green" | "blue" | "purple";
-  total: number;
 };
 
-function toDate(day: string, hm?: string | null) {
-  const base = new Date(day + "T00:00:00");
-  if (hm) {
-    const [h, m] = hm.split(":").map(Number);
-    base.setHours(h ?? 0, m ?? 0, 0, 0);
-  }
-  return base;
-}
-
-async function getLiveOrNext(): Promise<{ live?: EventRow; next?: EventRow; isPreview?: boolean }> {
-  const rows = (await db.select().from(eventsTable)) as EventRow[];
-  const liveCandidate = rows.find((r) => r.status === "live");
-
-  if (liveCandidate) {
-    // Determine whether it's actually within the live window
-    const now = new Date();
-    const start = toDate(liveCandidate.day, liveCandidate.startTime);
-    const end = toDate(
-      liveCandidate.day,
-      liveCandidate.endTime ?? liveCandidate.startTime ?? undefined
-    );
-    const isNow = now >= start && now <= end;
-    if (isNow) return { live: liveCandidate, isPreview: false };
-    // Mark as preview if it's toggled live but not in the window yet
-    return { live: liveCandidate, isPreview: true };
-  }
-
-  // Fallback: Next upcoming event
-  const now = new Date();
-  const upcoming = rows
-    .map((r) => ({ when: toDate(r.day, r.startTime).getTime(), row: r }))
-    .filter((x) => x.when > now.getTime())
-    .sort((a, b) => a.when - b.when)[0]?.row;
-
-  return upcoming ? { next: upcoming } : {};
+/** Small helper to render a team color chip using your CSS variables */
+function TeamDot({ color }: { color: TeamRow["color"] }) {
+  return (
+    <span
+      className="inline-block size-3 rounded-full"
+      style={{ background: `var(--tw-color-team-${color})` }}
+      aria-hidden
+    />
+  );
 }
 
 export default async function Home() {
-  // Leaderboard (server-side, DB direct)
+  // Pull all teams (alphabetical by name for now; change as you like)
   const { rows } = await db.execute(sql`
-    SELECT t.id, t.name, t.color, COALESCE(SUM(s.points),0) AS total
-    FROM teams t
-    LEFT JOIN scores s ON s.team_id = t.id
-    GROUP BY t.id
-    ORDER BY total DESC;
+    SELECT id, name, color
+    FROM teams
+    ORDER BY name ASC;
   `);
   const teams = rows as TeamRow[];
 
-  // Live / Next logic
-  const { live, next, isPreview } = await getLiveOrNext();
-
   return (
     <main className="p-4 space-y-4">
-      {live && (
-        <NowPlayingBanner
-          title={isPreview ? `${live.title} • Preview` : live.title}
-          location={live.locationLabel}
-          day={live.day}
-          startTime={live.startTime}
-          endTime={live.endTime ?? live.startTime /* fallback */}
-        />
-      )}
+      {/* Welcome / Hero */}
+      <section className="rounded-3xl p-6 shadow bg-gradient-to-br from-white/80 via-white/60 to-white/30 backdrop-blur">
+        <h1 className="text-3xl font-display tracking-tight">Welcome to CZK Oktoberfest</h1>
+        <p className="opacity-80 mt-1">
+          A long-weekend of games, dinners, and family fun on the ranch. Explore the schedule,
+          check team rosters, and get ready to compete!
+        </p>
+      </section>
 
-      {!live && next && (
-        <div className="rounded-2xl p-4 bg-white/70 backdrop-blur shadow">
-          <div className="text-sm opacity-70">Next Up</div>
-          <div className="text-lg font-display">{next.title}</div>
-          <div className="text-sm opacity-80">
-            {next.day} {next.startTime ?? ""} · {next.locationLabel ?? "On-site"}
-          </div>
-        </div>
-      )}
-
-      {!live && !next && (
-        <div className="rounded-2xl p-4 bg-white/70 backdrop-blur shadow">
-          <div className="text-sm opacity-70">No upcoming events</div>
-          <div className="text-sm opacity-80">Check back soon.</div>
-        </div>
-      )}
-
+      {/* Teams */}
       <section className="rounded-2xl p-4 bg-white/70 backdrop-blur shadow">
-        <h2 className="text-xl font-display mb-2">Leaderboard</h2>
-        <ol className="space-y-1">
-          {teams.map((t) => (
-            <li key={t.id} className="flex items-center justify-between">
-              <span className="flex items-center gap-2">
-                <span
-                  className="size-3 rounded-full"
-                  style={{ background: `var(--tw-color-team-${t.color})` }}
-                />
-                {t.name}
-              </span>
-              <span className="font-semibold">{t.total}</span>
-            </li>
-          ))}
-        </ol>
+        <div className="mb-3 flex items-baseline justify-between">
+          <h2 className="text-xl font-display">Teams</h2>
+          <p className="text-sm opacity-70">Tap a card to add photos & bios later</p>
+        </div>
+
+        {teams.length === 0 ? (
+          <div className="rounded-xl border border-black/10 bg-white/70 p-4 text-sm opacity-80">
+            No teams found yet. Seed or add teams to see them here.
+          </div>
+        ) : (
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {teams.map((t) => (
+              <li key={t.id}>
+                <TeamCard team={t} />
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </main>
+  );
+}
+
+/** Team card with frosted look + tasteful placeholders */
+function TeamCard({ team }: { team: TeamRow }) {
+  return (
+    <div className="rounded-2xl p-4 bg-white/80 backdrop-blur shadow relative overflow-hidden">
+      {/* subtle ribbon accent that uses the team color */}
+      <div
+        className="absolute -right-6 -top-6 h-16 w-16 rotate-12 opacity-20"
+        style={{ background: `var(--tw-color-team-${team.color})` }}
+        aria-hidden
+      />
+
+      <div className="flex items-start gap-3">
+        {/* Photo placeholder */}
+        <div
+          className="size-16 shrink-0 rounded-xl border border-black/10 bg-white/70 grid place-items-center text-[10px] uppercase tracking-wide"
+          style={{ outline: `2px solid var(--tw-color-team-${team.color})`, outlineOffset: 2 }}
+        >
+          Photo
+        </div>
+
+        {/* Textual content */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <TeamDot color={team.color} />
+            <h3 className="font-medium leading-tight truncate">{team.name}</h3>
+          </div>
+
+          <p className="mt-1 text-sm opacity-80 line-clamp-2">
+            Add a short team bio here. You can include past wins, team motto, or fun facts.
+          </p>
+
+          {/* Meta row */}
+          <div className="mt-2 flex items-center gap-2 text-xs">
+            <span className="inline-flex items-center gap-1 rounded-full px-2 py-1 bg-white/70">
+              <span className="opacity-70">Color</span>
+              <span
+                className="inline-block size-2 rounded-full"
+                style={{ background: `var(--tw-color-team-${team.color})` }}
+                aria-hidden
+              />
+            </span>
+            <span className="inline-flex items-center gap-1 rounded-full px-2 py-1 bg-white/70">
+              Roster: <span className="opacity-70">add later</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
