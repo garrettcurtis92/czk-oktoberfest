@@ -75,12 +75,12 @@ export default function AdminScoreClient({
         <SelectContent className="rounded-xl bg-white text-gray-900 shadow-xl border border-gray-200">
           {teams.map((t) => (
             <SelectItem key={t.id} value={t.id.toString()}>
-              <span className="inline-flex items-center gap-2">
+              <span className="inline-flex items-center gap-2 min-w-0">
                 <span
                   className="size-3 rounded-full"
                   style={{ background: `var(--tw-color-team-${t.color})` }}
                 />
-                {t.name}
+                <span className="truncate">{t.name}</span>
               </span>
             </SelectItem>
           ))}
@@ -153,10 +153,10 @@ export default function AdminScoreClient({
                                           {s.points >= 0 ? "+" : ""}
                                           {s.points} <span className="opacity-70">to</span>{" "}
                                           {t ? (
-                                              <span className="inline-flex items-center gap-2">
-                                                  <span className="size-2.5 rounded-full" style={{ background: `var(--tw-color-team-${t.color})` }} />
-                                                  {t.name}
-                                              </span>
+                        <span className="inline-flex items-center gap-2 min-w-0">
+                          <span className="size-2.5 rounded-full" style={{ background: `var(--tw-color-team-${t.color})` }} />
+                          <span className="truncate">{t.name}</span>
+                        </span>
                                           ) : "Team"}
                                       </div>
                                       <div className="opacity-70">

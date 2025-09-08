@@ -29,13 +29,13 @@ export default async function ScoresPage() {
         <ol className="space-y-2">
           {teams.map((t, i) => (
             <li key={t.id} className="flex items-center justify-between">
-              <span className="flex items-center gap-2">
+              <span className="flex items-center gap-2 min-w-0">
                 <span
                   className="size-3 rounded-full"
                   style={{ background: `var(--tw-color-team-${t.color})` }}
                 />
                 <span className="font-medium">{i + 1}.</span>
-                {t.name}
+                <span className="truncate">{t.name}</span>
               </span>
               <span className="font-semibold tabular-nums">{t.total}</span>
             </li>

@@ -5,6 +5,19 @@ import { SiteHeader, BottomTabs } from "@/components/nav/site-nav";
 export const metadata: Metadata = {
   title: "CZK Oktoberfest",
   description: "Family games, schedule, and live scores",
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+    apple: "/apple-touch-icon.svg",
+  },
+  manifest: "/manifest.json",
+  openGraph: {
+    images: "/logo.svg",
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: ["/logo.svg"],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
