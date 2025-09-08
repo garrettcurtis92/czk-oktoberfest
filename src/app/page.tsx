@@ -4,12 +4,26 @@ export const revalidate = 0;
 
 import { db } from "@/db";
 import { sql } from "drizzle-orm";
+import Image from "next/image";
 
 /** DB rows */
 type TeamRow = {
   id: number;
   name: string;
   color: "red" | "orange" | "yellow" | "green" | "blue" | "purple";
+};
+
+/** Captain directory (by team color) */
+const CAPTAINS: Record<
+  TeamRow["color"],
+  { name: string; slug: string; img: string }
+> = {
+  red:    { name: "Mandi Kelly",          slug: "mandi-kelly",          img: "/captains/mandi-kelly.jpg" },
+  orange: { name: "Tim Zanotelli",        slug: "tim-zanotelli",        img: "/captains/tim-zanotelli.jpg" },
+  yellow: { name: "Dalton Kelly",         slug: "dalton-kelly",         img: "/captains/dalton-kelly.jpg" },
+  green:  { name: "Luke Kelly",           slug: "luke-kelly",           img: "/captains/luke-kelly.jpg" },
+  blue:   { name: "Amaryllis Zanotelli",  slug: "amaryllis-zanotelli",  img: "/captains/amaryllis-zanotelli.jpg" },
+  purple: { name: "Lexie Curtis",         slug: "lexie-curtis",         img: "/captains/lexie-curtis.jpg" },
 };
 
 /** Small helper to render a team color chip using your CSS variables */
@@ -24,7 +38,7 @@ function TeamDot({ color }: { color: TeamRow["color"] }) {
 }
 
 export default async function Home() {
-  // Pull all teams (alphabetical by name for now; change as you like)
+  // Pull all teams (alphabetical by name for now)
   const { rows } = await db.execute(sql`
     SELECT id, name, color
     FROM teams
@@ -34,7 +48,7 @@ export default async function Home() {
 
   return (
     <main className="p-4 space-y-4">
-      {/* Welcome / Hero */}
+      {/* Welcome / Hero (glassy) */}
       <section className="rounded-3xl p-6 shadow bg-gradient-to-br from-white/80 via-white/60 to-white/30 backdrop-blur">
         <h1 className="text-3xl font-display tracking-tight">Welcome to CZK Oktoberfest</h1>
         <p className="opacity-80 mt-1">
@@ -43,11 +57,11 @@ export default async function Home() {
         </p>
       </section>
 
-      {/* Teams */}
+      {/* Teams (glassy cards like Schedule) */}
       <section className="rounded-2xl p-4 bg-white/70 backdrop-blur shadow">
         <div className="mb-3 flex items-baseline justify-between">
           <h2 className="text-xl font-display">Teams</h2>
-          <p className="text-sm opacity-70">Tap a card to add photos & bios later</p>
+          <p className="text-sm opacity-70">Captains shown — photos & bios coming soon</p>
         </div>
 
         {teams.length === 0 ? (
@@ -68,8 +82,10 @@ export default async function Home() {
   );
 }
 
-/** Team card with frosted look + tasteful placeholders */
+/** Team card with frosted look + captain photo/name */
 function TeamCard({ team }: { team: TeamRow }) {
+  const captain = CAPTAINS[team.color];
+
   return (
     <div className="rounded-2xl p-4 bg-white/80 backdrop-blur shadow relative overflow-hidden">
       {/* subtle ribbon accent that uses the team color */}
@@ -80,12 +96,16 @@ function TeamCard({ team }: { team: TeamRow }) {
       />
 
       <div className="flex items-start gap-3">
-        {/* Photo placeholder */}
-        <div
-          className="size-16 shrink-0 rounded-xl border border-black/10 bg-white/70 grid place-items-center text-[10px] uppercase tracking-wide"
-          style={{ outline: `2px solid var(--tw-color-team-${team.color})`, outlineOffset: 2 }}
-        >
-          Photo
+        {/* Captain photo placeholder (drop images in /public/captains/*.jpg) */}
+        <div className="relative size-16 shrink-0 rounded-xl overflow-hidden border border-black/10 bg-white/70">
+          <Image
+            src={captain.img}
+            alt={`${captain.name} — ${team.name} captain`}
+            fill
+            className="object-cover"
+            sizes="64px"
+            priority={false}
+          />
         </div>
 
         {/* Textual content */}
@@ -95,8 +115,9 @@ function TeamCard({ team }: { team: TeamRow }) {
             <h3 className="font-medium leading-tight truncate">{team.name}</h3>
           </div>
 
-          <p className="mt-1 text-sm opacity-80 line-clamp-2">
-            Add a short team bio here. You can include past wins, team motto, or fun facts.
+          {/* Captain line */}
+          <p className="mt-1 text-sm">
+            <span className="opacity-70">Team Captain:</span> {captain.name}
           </p>
 
           {/* Meta row */}
