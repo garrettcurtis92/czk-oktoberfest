@@ -9,7 +9,8 @@
     "lint": "eslint",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
-  "db:seed:brackets": "tsx src/db/seed.ts"
+    "db:seed:brackets": "tsx src/db/seed.ts",
+    "db:fix-events": "tsx -r dotenv/config src/db/scripts/fix-events.ts"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.10",
