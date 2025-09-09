@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // src/db/scripts/fix-events.ts
 // Explicitly load .env.local so env vars are available when run via tsx
 import dotenv from "dotenv";
