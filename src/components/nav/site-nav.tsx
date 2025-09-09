@@ -3,9 +3,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { CalendarDays, Home, Trophy, Images, Menu } from "lucide-react";
+import { CalendarDays, Home, Trophy, Menu, Flag } from "lucide-react"; // added Flag
 import { useState, useEffect } from "react";
-import { cn } from "@/lib/utils"; // if you don’t have cn, replace with a simple join
+import { cn } from "@/lib/utils";
 
 function TabLink({
   href,
@@ -32,6 +32,7 @@ function TabLink({
     </Link>
   );
 }
+
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-20 bg-sand/80 backdrop-blur">
@@ -51,8 +52,6 @@ export function SiteHeader() {
   );
 }
 
-
-
 export function BottomTabs() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -66,7 +65,7 @@ export function BottomTabs() {
     { href: "/", label: "Home", icon: <Home className="h-5 w-5" /> },
     { href: "/schedule", label: "Schedule", icon: <CalendarDays className="h-5 w-5" /> },
     { href: "/leaderboard", label: "Scores", icon: <Trophy className="h-5 w-5" /> },
-    { href: "/gallery", label: "Gallery", icon: <Images className="h-5 w-5" /> },
+    { href: "/brackets", label: "Brackets", icon: <Flag className="h-5 w-5" /> }, // <-- added
   ];
 
   return (
@@ -126,4 +125,3 @@ export function BottomTabs() {
     </>
   );
 }
-

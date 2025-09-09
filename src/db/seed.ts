@@ -1,33 +1,68 @@
-import * as dotenv from "dotenv";
-dotenv.config({ path: ".env.local" });
 
-import { db } from "./index";
-import { teams, events } from "./schema";
+// src/db/seed.ts
+// 1) Explicitly load .env.local to ensure env vars are available
+import dotenv from "dotenv";
+import path from "path";
+dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 
-async function main() {
-  await db.delete(events);
-  await db.delete(teams);
-  await db.insert(teams).values([
-    { name: "Red Team", color: "red" },
-    { name: "Orange Team", color: "orange" },
-    { name: "Yellow Team", color: "yellow" },
-    { name: "Green Team", color: "green" },
-    { name: "Blue Team", color: "blue" },
-    { name: "Purple Team", color: "purple" },
-  ]);
+// 2) Load envs and map DATABASE_URL -> POSTGRES_URL *before* importing the DB.
 
-  await db.insert(events).values([
-    { title: "Opening Message & Prayer (JK)", day: "2025-10-03", startTime: "16:00", type: "social", locationLabel: "Lil Z Shop" },
-    { title: "Dinner hosted by Dunn-Z",        day: "2025-10-03", startTime: "17:00", type: "dinner", locationLabel: "Lil Z Shop" },
-    { title: "Costume Contest & Dance Party",  day: "2025-10-03", startTime: "19:00", type: "social", locationLabel: "Lil Z Shop" },
-    { title: "Cornhole & Ping-Pong Tourney",   day: "2025-10-04", startTime: "10:00", endTime: "15:00", type: "social", locationLabel: "Lil Z Shop", basePoints: 10 },
-    { title: "Dinner hosted by Kelly Clan",    day: "2025-10-04", startTime: "17:00", type: "dinner", locationLabel: "Kelly House" },
-    { title: "Jeopardy Night",                 day: "2025-10-04", startTime: "18:30", type: "game",   locationLabel: "Lil Z Shop", basePoints: 8 },
-    { title: "Bingo & Mimosas",                day: "2025-10-05", startTime: "09:30", type: "social", locationLabel: "Curt Z's" },
-    { title: "Pickleball Tournament",          day: "2025-10-05", startTime: "10:30", endTime: "15:00", type: "game", locationLabel: "Curt Z's", basePoints: 10 },
-    { title: "Dinner hosted by Curt Z's",      day: "2025-10-05", startTime: "17:00", type: "dinner", locationLabel: "Curt Z's" },
-    { title: "Bunko",                           day: "2025-10-05", startTime: "18:30", type: "game",   locationLabel: "Curt Z's", basePoints: 6 },
-  ]);
-  console.log("Seed complete ✔");
+if (!process.env.POSTGRES_URL && process.env.DATABASE_URL) {
+  process.env.POSTGRES_URL = process.env.DATABASE_URL;
 }
-main();
+// Optional (harmless) extras used by some setups/tools:
+if (!process.env.POSTGRES_URL_NON_POOLING && process.env.DATABASE_URL) {
+  process.env.POSTGRES_URL_NON_POOLING = process.env.DATABASE_URL;
+}
+if (!process.env.POSTGRES_PRISMA_URL && process.env.DATABASE_URL) {
+  process.env.POSTGRES_PRISMA_URL = process.env.DATABASE_URL;
+}
+
+// 2) Now import the DB (envs are ready) and run everything in an async IIFE
+(async () => {
+  const { db } = await import("./index");
+  const { teams, brackets, bracketTeams, matches } = await import("./schema");
+
+  // --- Seed function (same logic as before) ---
+  async function seedBrackets() {
+    // get some teams
+    const allTeams = await db.select().from(teams);
+    const entrants = allTeams.slice(0, 8); // adjust if you have fewer/more
+
+    // create bracket
+    const [b] = await db
+      .insert(brackets)
+      .values({ title: "Cornhole Bracket", format: "single_elim" })
+      .returning();
+
+    // seed entries with seeds 1..N
+    for (let i = 0; i < entrants.length; i++) {
+      await db.insert(bracketTeams).values({
+        bracketId: b.id,
+        teamId: entrants[i].id,
+        seed: i + 1,
+      });
+    }
+
+    // Round 1 pairings: 1vN, 2vN-1, ...
+    const N = entrants.length;
+    const seedMap = new Map<number, number>();
+    entrants.forEach((t, idx) => seedMap.set(idx + 1, t.id));
+
+    let pos = 1;
+    for (let i = 1; i <= N / 2; i++) {
+      await db.insert(matches).values({
+        bracketId: b.id,
+        round: 1,
+        position: pos++,
+        teamAId: seedMap.get(i)!,
+        teamBId: seedMap.get(N - i + 1)!,
+      });
+    }
+  }
+
+  await seedBrackets();
+  console.log("Brackets seeded!");
+})();
+// (removed duplicate and misplaced code)
+

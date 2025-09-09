@@ -7,8 +7,9 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
-    "db:push": "drizzle-kit push --config=drizzle.config.cjs",
-    "seed": "ts-node --compiler-options '{\"module\":\"commonjs\"}' src/db/seed.ts"
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
+  "db:seed:brackets": "tsx src/db/seed.ts"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.10",
@@ -51,6 +52,7 @@
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.17",
     "ts-node": "^10.9.2",
+    "tsx": "^4.20.5",
     "tw-animate-css": "^1.3.8",
     "typescript": "^5"
   }
