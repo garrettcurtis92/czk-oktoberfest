@@ -1,4 +1,3 @@
-// src/components/ConfettiBurst.tsx
 "use client";
 
 import { useEffect } from "react";
@@ -31,7 +30,7 @@ export default function ConfettiBurst({
       root.style.zIndex = "60";
       document.body.appendChild(root);
 
-      const colors = ["#2563eb","#f59e0b","#10b981","#ef4444","#8b5cf6","#eab308"];
+      const colors = ["#2563eb", "#f59e0b", "#10b981", "#ef4444", "#8b5cf6", "#eab308"];
 
       for (let i = 0; i < count; i++) {
         const p = document.createElement("span");
@@ -49,7 +48,7 @@ export default function ConfettiBurst({
         p.style.borderRadius = "2px";
         p.style.opacity = "0.95";
         p.style.transform = `rotate(${rot}deg)`;
-    p.style.setProperty("filter", "drop-shadow(0px 1px 0px rgba(0,0,0,0.1))");
+        p.style.setProperty("filter", "drop-shadow(0px 1px 0px rgba(0,0,0,0.1))");
 
         const travel = 70 + Math.random() * 25;
         p.animate(
@@ -67,7 +66,7 @@ export default function ConfettiBurst({
       setTimeout(() => root.remove(), durationMs + 1200);
     }
 
-    // If caller requested firing immediately on mount, do it now.
+    // If requested, fire immediately on mount (once per session)
     if (fireOnMount) {
       fire();
       return;
@@ -81,3 +80,4 @@ export default function ConfettiBurst({
 
   return null;
 }
+

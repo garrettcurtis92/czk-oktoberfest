@@ -2,9 +2,13 @@
 
 import { useEffect, useState } from "react";
 
-export default function SplashVerse() {
-  const displayMs = 2600; // longer display
-  const fadeMs = 600; // slightly longer fade
+export default function SplashVerse({
+  displayMs = 2600, // longer display
+  fadeMs = 600, // slightly longer fade
+}: {
+  displayMs?: number;
+  fadeMs?: number;
+}) {
   const [visible, setVisible] = useState(false);
   const [hidden, setHidden] = useState(false);
 

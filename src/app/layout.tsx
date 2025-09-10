@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { SiteHeader, BottomTabs } from "@/components/nav/site-nav";
 import PageTransition from "@/components/PageTransition";
 import SplashVerse from "@/components/SplashVerse";
+import ConfettiBurst from "@/components/ConfettiBurst";
 
 export const metadata: Metadata = {
   title: "CZK Oktoberfest",
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className={`$bg-sand text-charcoal`}>
         <SplashVerse />
+        <ConfettiBurst />
         <SiteHeader />
         <main className="mx-auto max-w-3xl px-4 py-4">
           <PageTransition>{children}</PageTransition>

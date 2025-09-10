@@ -6,7 +6,7 @@ export const revalidate = 0;
 import { db } from "@/db";
 import { sql } from "drizzle-orm";
 import Image from "next/image";
-import ConfettiBurst from "@/components/ConfettiBurst";
+
 import ColorChips from "@/components/ColorChips";
 
 
@@ -90,7 +90,7 @@ export default async function Home() {
   </div>
 
   {/* Confetti (fires once when the page loads) */}
-  <ConfettiBurst fireOnMount={true} />
+  
 </section>
 
 
