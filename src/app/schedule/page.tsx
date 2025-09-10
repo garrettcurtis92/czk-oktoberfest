@@ -17,9 +17,18 @@ type EventRow = {
   hostFamily?: string | null;
   description?: string | null;
   type: "game" | "dinner" | "social";
-  basePoints: number;
   status?: "scheduled" | "live" | "paused" | "finished";
 };
+/** ---------- UI-only additions (non-breaking) ---------- */
+type PlacementScoring = {
+  kind: "placement";
+  first: number;
+  second: number;
+  third: number;
+};
+
+type UiEvent = EventRow & { scoring?: PlacementScoring };
+/** ------------------------------------------------------ */
 
 const typeColor: Record<EventRow["type"], string> = {
   game: "bg-team-blue text-white",
@@ -141,23 +150,61 @@ export default function SchedulePage() {
       .catch(() => setLoading(false));
   }, []);
 
-  // sort by datetime
-  const sorted = useMemo(() => {
-    return [...rows].sort((a, b) => {
-      const ta = toDate(a.day, a.startTime ?? "99:99").getTime();
-      const tb = toDate(b.day, b.startTime ?? "99:99").getTime();
-      return ta - tb;
-    });
-  }, [rows]);
+    // Derive UI rows (split combined events + add 3/2/1 placement scoring)
+// Derive UI rows (split combined events + add 3/2/1 placement scoring)
+const uiRows: UiEvent[] = useMemo(() => {
+  const placement: PlacementScoring = { kind: "placement", first: 3, second: 2, third: 1 };
 
-  // group by day
-  const dayEntries = useMemo(() => {
-    const daysMap = new Map<string, EventRow[]>();
-    for (const e of sorted) {
-      daysMap.set(e.day, [...(daysMap.get(e.day) ?? []), e]);
+  const expanded = rows.flatMap<UiEvent>((r) => {
+    // Costume Party → mark as Game with placement scoring
+    if (/^costume party$/i.test(r.title)) {
+      return [{ ...(r as UiEvent), type: "game", scoring: placement }];
     }
-    return [...daysMap.entries()] as [string, EventRow[]][];
-  }, [sorted]);
+
+    // Cornhole & Ping-Pong combined → split into two Game rows
+    if (/cornhole/i.test(r.title) && /ping[- ]?pong/i.test(r.title)) {
+      const common: UiEvent = { ...(r as UiEvent), type: "game", scoring: placement };
+      return [
+        { ...common, id: Number(String(r.id) + "1"), title: "Cornhole" },
+        { ...common, id: Number(String(r.id) + "2"), title: "Ping-Pong" },
+      ];
+    }
+
+    // Default → just return the event unchanged
+    return [r as UiEvent];
+  });
+
+  // NEW: ensure *all* games have placement scoring (3/2/1)
+  return expanded.map((ev) =>
+    ev.type === "game" && !ev.scoring
+      ? { ...ev, scoring: placement }
+      : ev
+  );
+}, [rows]);
+
+
+
+  // sort by datetime
+  // sort by datetime (use uiRows now)
+const sorted = useMemo(() => {
+  return [...uiRows].sort((a, b) => {
+    const ta = toDate(a.day, a.startTime ?? "99:99").getTime();
+    const tb = toDate(b.day, b.startTime ?? "99:99").getTime();
+    return ta - tb;
+  });
+}, [uiRows]);
+
+
+
+// group by day (UiEvent[])
+const dayEntries = useMemo(() => {
+  const daysMap = new Map<string, UiEvent[]>();
+  for (const e of sorted) {
+    daysMap.set(e.day, [...(daysMap.get(e.day) ?? []), e]);
+  }
+  return [...daysMap.entries()] as [string, UiEvent[]][];
+}, [sorted]);
+
 
   // find live event (first match)
   const live = useMemo(() => sorted.find((e) => e.status === "live") ?? null, [sorted]);
@@ -239,11 +286,12 @@ useEffect(() => {
 
   return (
     <main className="p-4 space-y-4">
+      <CoinStyles />
       {/* Hero */}
       <section className="rounded-3xl p-6 shadow bg-gradient-to-br from-white/80 via-white/60 to-white/30 backdrop-blur">
         <h1 className="text-3xl font-display tracking-tight">CZK Oktoberfest</h1>
-        <p className="opacity-70">{dateRange(rows)} · On the Ranch</p>
-      </section>
+        <p className="opacity-70">{dateRange(uiRows)} · On the Ranch</p>
+        </section>
 
       {/* Now Playing chip */}
      {/* Live chip OR Next Up chip */}
@@ -322,8 +370,87 @@ useEffect(() => {
     </main>
   );
 }
+function Coin({
+  children,
+  tone = "gold",
+  className = "",
+}: {
+  children: React.ReactNode; // the number
+  tone?: "gold" | "silver" | "bronze";
+  className?: string;
+}) {
+  const tones = {
+    gold:
+      "from-yellow-200 via-amber-300 to-amber-500 text-amber-900 ring-amber-400/60 shadow-amber-900/10",
+    silver:
+      "from-zinc-100 via-zinc-300 to-zinc-500 text-zinc-900 ring-zinc-400/60 shadow-zinc-900/10",
+    bronze:
+      "from-amber-200 via-orange-300 to-orange-600 text-orange-950 ring-orange-500/60 shadow-orange-900/10",
+  } as const;
 
-function EventCard({ ev, tick }: { ev: EventRow; tick?: number }) {
+  return (
+    <span
+      aria-hidden
+      className={[
+        // coin base
+        "inline-grid place-items-center size-6 rounded-full",
+        "bg-gradient-to-br shadow-sm ring-1",
+        // subtle emboss/shine
+        "shadow-inner",
+        tones[tone],
+        className,
+      ].join(" ")}
+    >
+      <span className="text-[11px] font-extrabold leading-none">{children}</span>
+    </span>
+  );
+}
+function CoinStyles() {
+  return (
+    <style jsx global>{`
+      /* Shimmer sweep for the gold coin */
+      .coin-shimmer {
+        position: relative;
+        overflow: hidden;
+        /* keep coin shape tight */
+        border-radius: 9999px;
+        isolation: isolate;
+      }
+      .coin-shimmer::after {
+        content: "";
+        position: absolute;
+        inset: -30%;
+        /* diagonal sweep highlight */
+        background: linear-gradient(
+          120deg,
+          transparent 45%,
+          rgba(255, 255, 255, 0.6) 50%,
+          transparent 55%
+        );
+        transform: translateX(-160%);
+        animation: coinShimmer 2.2s ease-in-out infinite;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      @keyframes coinShimmer {
+        to {
+          transform: translateX(160%);
+        }
+      }
+
+      /* Respect reduced motion */
+      @media (prefers-reduced-motion: reduce) {
+        .coin-shimmer::after {
+          animation: none;
+        }
+      }
+    `}</style>
+  );
+}
+
+
+function EventCard({ ev, tick }: { ev: UiEvent; tick?: number }) {
   const isLive = ev.status === "live";
   return (
     <div
@@ -351,7 +478,7 @@ function EventCard({ ev, tick }: { ev: EventRow; tick?: number }) {
 
           <h3 className="text-lg font-display leading-tight">{ev.title}</h3>
 
-          <div className="flex flex-wrap items-center gap-2 text-sm opacity-80">
+          <div className="flex flex-wrap items-center gap-2.5 text-sm opacity-80">
             {ev.startTime && (
               <span className="inline-flex items-center gap-1 rounded-full px-2 py-1 bg-white/70">
                 <Clock className="h-3.5 w-3.5" />
@@ -366,9 +493,21 @@ function EventCard({ ev, tick }: { ev: EventRow; tick?: number }) {
               </span>
             )}
             {ev.type === "game" && (
-              <span className="inline-flex items-center gap-1 rounded-full px-2 py-1 bg-white/70">
+              <span className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 bg-white/70">
                 <Trophy className="h-3.5 w-3.5" />
-                Base {ev.basePoints}
+                {/* Screen-reader label so the visuals are accessible */}
+                <span className="sr-only">
+                  Scoring: first {ev.scoring?.first ?? 3} points, second {ev.scoring?.second ?? 2} points, third {ev.scoring?.third ?? 1} point.
+                </span>
+
+                {/* Coins */}
+                <span className="flex items-center gap-1.5" aria-hidden>
+                  <Coin tone="gold" className={isLive ? "coin-shimmer" : ""}>
+        {ev.scoring?.first ?? 3}
+      </Coin>
+                  <Coin tone="silver">{ev.scoring?.second ?? 2}</Coin>
+                  <Coin tone="bronze">{ev.scoring?.third ?? 1}</Coin>
+                </span>
               </span>
             )}
             {ev.hostFamily && (
