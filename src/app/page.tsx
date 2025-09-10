@@ -6,6 +6,7 @@ export const revalidate = 0;
 import { db } from "@/db";
 import { sql } from "drizzle-orm";
 import Image from "next/image";
+import CaptainCard from "@/components/CaptainsCard";
 
 import ColorChips from "@/components/ColorChips";
 
@@ -120,54 +121,84 @@ export default async function Home() {
 /** Team card with frosted look + captain photo/name */
 function TeamCard({ team }: { team: TeamRow }) {
   const captain = CAPTAINS[team.color];
+  const teamVar = `var(--tw-color-team-${team.color})`;
 
   return (
-    <div className="rounded-2xl p-4 bg-white/80 backdrop-blur shadow relative overflow-hidden">
-      {/* subtle ribbon accent that uses the team color */}
-      <div
-        className="absolute -right-6 -top-6 h-16 w-16 rotate-12 opacity-20"
-        style={{ background: `var(--tw-color-team-${team.color})` }}
-        aria-hidden
-      />
+    <div
+      className={[
+        "relative overflow-hidden rounded-3xl p-5",
+        // glassy gradient + blur (matches hero)
+        "bg-gradient-to-br from-white/80 via-white/60 to-white/30 backdrop-blur",
+        // soft border + elevation
+        "border border-white/60 shadow-[0_10px_30px_rgba(0,0,0,0.08)]",
+        // hover/focus polish
+        "transition hover:shadow-[0_14px_40px_rgba(0,0,0,0.12)] focus-within:ring-2 focus-within:ring-black/10",
+      ].join(" ")}
+    >
+      {/* decorative blobs tinted to team color (kept separate from content) */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div
+          className="absolute -top-16 -right-14 h-40 w-40 rounded-full blur-3xl"
+          style={{ background: `color-mix(in oklab, ${teamVar} 25%, transparent)` }}
+          aria-hidden
+        />
+        <div
+          className="absolute -bottom-16 -left-14 h-40 w-40 rounded-full blur-3xl"
+          style={{ background: `color-mix(in oklab, ${teamVar} 15%, transparent)` }}
+          aria-hidden
+        />
+      </div>
 
-      <div className="flex items-start gap-3">
-        {/* Captain photo placeholder (drop images in /public/captains/*.jpg) */}
-        <div className="relative size-16 shrink-0 rounded-xl overflow-hidden border border-black/10 bg-white/70">
+      {/* content layer */}
+      <div className="relative z-10 flex items-start gap-4">
+        {/* avatar frame (glassy) */}
+        <div
+          className="relative grid place-items-center h-16 w-16 shrink-0 rounded-2xl overflow-hidden border border-white/70 bg-white/70 backdrop-blur"
+          style={{ boxShadow: "inset 0 1px 0 rgba(255,255,255,0.6)" }}
+        >
           <Image
             src={captain.img}
             alt={`${captain.name} — ${team.name} captain`}
             fill
-            className="object-cover"
             sizes="64px"
+            className="object-cover"
             priority={false}
           />
         </div>
 
-        {/* Textual content */}
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0 flex-1">
+          {/* header: team pill + name */}
           <div className="flex items-center gap-2">
-            <TeamDot color={team.color} />
-            <h3 className="font-medium leading-tight truncate">{team.name}</h3>
+            <span
+              className="inline-block h-2.5 w-2.5 rounded-full ring-2 ring-white/80"
+              style={{ background: teamVar }}
+              aria-hidden
+            />
+            <h3 className="font-display text-lg leading-tight truncate">{team.name}</h3>
           </div>
 
-          {/* Captain line */}
+          {/* captain line */}
           <p className="mt-1 text-sm">
             <span className="opacity-70">Team Captain:</span> {captain.name}
           </p>
 
-          {/* Meta row */}
-          <div className="mt-2 flex items-center gap-2 text-xs">
+          {/* meta chips */}
+          <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
             <span className="inline-flex items-center gap-1 rounded-full px-2 py-1 bg-white/70">
               <span className="opacity-70">Color</span>
               <span
                 className="inline-block size-2 rounded-full"
-                style={{ background: `var(--tw-color-team-${team.color})` }}
+                style={{ background: teamVar }}
                 aria-hidden
               />
             </span>
-            <span className="inline-flex items-center gap-1 rounded-full px-2 py-1 bg-white/70">
-              Roster: <span className="opacity-70">add later</span>
-            </span>
+            {/* placeholder for roster/cta */}
+            <a
+              href={`/teams/${team.color}`}
+              className="inline-flex items-center gap-1 rounded-full px-2 py-1 border border-black/10 bg-white/60 hover:bg-white/80 transition"
+            >
+              View team
+            </a>
           </div>
         </div>
       </div>

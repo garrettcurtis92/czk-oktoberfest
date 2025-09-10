@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { CalendarDays, Home, Trophy, Menu, Flag } from "lucide-react";
+import { CalendarDays, Home, Trophy, Menu, Flag, User } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -83,7 +83,7 @@ export function BottomTabs() {
   }, [pathname]);
 
   const items: TabItem[] = [
-    { href: "/", label: "Home", icon: <Home className="h-5 w-5" /> },
+    { href: "/", label: "Teams", icon: <User className="h-5 w-5" /> },
     { href: "/schedule", label: "Schedule", icon: <CalendarDays className="h-5 w-5" /> },
     { href: "/leaderboard", label: "Scores", icon: <Trophy className="h-5 w-5" /> },
     { href: "/brackets", label: "Brackets", icon: <Flag className="h-5 w-5" /> },

@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Clock, MapPin, Trophy, Gamepad2, Utensils, PartyPopper } from "lucide-react";
 import { motion } from "framer-motion";
+import GlassCard from "@/components/GlassCard";
+
 
 
 type EventRow = {
@@ -444,80 +446,98 @@ function CoinStyles() {
     `}</style>
   );
 }
+function eventAccent(ev: UiEvent) {
+  // Prefer status highlight, otherwise type color. You can tweak as desired.
+  if (ev.status === "live") return "var(--tw-color-team-red)";
+  if (ev.type === "game") return "var(--tw-color-team-blue)";
+  if (ev.type === "dinner") return "var(--tw-color-team-orange)";
+  if (ev.type === "social") return "var(--tw-color-team-green)";
+  return "rgba(0,0,0,0.12)";
+}
 
 
 function EventCard({ ev }: { ev: UiEvent }) {
   const isLive = ev.status === "live";
+  const accent = eventAccent(ev);
+
+  // If this event should link to a bracket page
+  const bracketHref = ev.type === "game" ? `/brackets/${ev.id}` : undefined;
   return (
-    <div
-      id={`event-${ev.id}`}
-      className={cn(
-        "rounded-2xl p-4 bg-white/80 backdrop-blur shadow relative overflow-hidden",
-        isLive && "ring-2 ring-team-red/70"
-      )}
+    <GlassCard
+      accent={eventAccent(ev)}
+      className={cn(isLive && "ring-2 ring-team-red/70")}
+      href={bracketHref}
     >
-  {isLive && <LiveProgress ev={ev} />}
+      <div
+        id={`event-${ev.id}`}
+        className={cn(
+          "rounded-2xl p-4 bg-white/80 backdrop-blur shadow relative overflow-hidden",
+          isLive && "ring-2 ring-team-red/70"
+        )}
+      >
+        {isLive && <LiveProgress ev={ev} />}
 
-      <div className="flex items-start justify-between gap-3">
-        <div className="space-y-2 flex-1">
-          <div className="flex items-center gap-2">
-            <Badge className={`gap-1 ${typeColor[ev.type]}`}>
-              {typeIcon[ev.type]}
-              <span className="capitalize">{ev.type}</span>
-            </Badge>
-            {ev.status && (
-              <span className={`px-2 py-0.5 rounded-full text-xs ${statusPill[ev.status]}`}>
-                {ev.status}
-              </span>
+        <div className="flex items-start justify-between gap-3">
+          <div className="space-y-2 flex-1">
+            <div className="flex items-center gap-2">
+              <Badge className={`gap-1 ${typeColor[ev.type]}`}>
+                {typeIcon[ev.type]}
+                <span className="capitalize">{ev.type}</span>
+              </Badge>
+              {ev.status && (
+                <span className={`px-2 py-0.5 rounded-full text-xs ${statusPill[ev.status]}`}>
+                  {ev.status}
+                </span>
+              )}
+            </div>
+
+            <h3 className="text-lg font-display leading-tight">{ev.title}</h3>
+
+            <div className="flex flex-wrap items-center gap-2.5 text-sm opacity-80">
+              {ev.startTime && (
+                <span className="inline-flex items-center gap-1 rounded-full px-2 py-1 bg-white/70">
+                  <Clock className="h-3.5 w-3.5" />
+                  {fmtTime(ev.startTime)}
+                  {ev.endTime ? `–${fmtTime(ev.endTime)}` : ""}
+                </span>
+              )}
+              {ev.locationLabel && (
+                <span className="inline-flex items-center gap-1 rounded-full px-2 py-1 bg-white/70">
+                  <MapPin className="h-3.5 w-3.5" />
+                  {ev.locationLabel}
+                </span>
+              )}
+              {ev.type === "game" && (
+                <span className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 bg-white/70">
+                  <Trophy className="h-3.5 w-3.5" />
+                  {/* Screen-reader label so the visuals are accessible */}
+                  <span className="sr-only">
+                    Scoring: first {ev.scoring?.first ?? 3} points, second {ev.scoring?.second ?? 2} points, third {ev.scoring?.third ?? 1} point.
+                  </span>
+
+                  {/* Coins */}
+                  <span className="flex items-center gap-1.5" aria-hidden>
+                    <Coin tone="gold" className={isLive ? "coin-shimmer" : ""}>
+          {ev.scoring?.first ?? 3}
+        </Coin>
+                    <Coin tone="silver">{ev.scoring?.second ?? 2}</Coin>
+                    <Coin tone="bronze">{ev.scoring?.third ?? 1}</Coin>
+                  </span>
+                </span>
+              )}
+              {ev.hostFamily && (
+                <span className="inline-flex items-center gap-1 rounded-full px-2 py-1 bg-white/70">
+                  Host: {ev.hostFamily}
+                </span>
+              )}
+            </div>
+
+            {ev.description && (
+              <p className="text-sm opacity-90 leading-relaxed pt-1">{ev.description}</p>
             )}
           </div>
-
-          <h3 className="text-lg font-display leading-tight">{ev.title}</h3>
-
-          <div className="flex flex-wrap items-center gap-2.5 text-sm opacity-80">
-            {ev.startTime && (
-              <span className="inline-flex items-center gap-1 rounded-full px-2 py-1 bg-white/70">
-                <Clock className="h-3.5 w-3.5" />
-                {fmtTime(ev.startTime)}
-                {ev.endTime ? `–${fmtTime(ev.endTime)}` : ""}
-              </span>
-            )}
-            {ev.locationLabel && (
-              <span className="inline-flex items-center gap-1 rounded-full px-2 py-1 bg-white/70">
-                <MapPin className="h-3.5 w-3.5" />
-                {ev.locationLabel}
-              </span>
-            )}
-            {ev.type === "game" && (
-              <span className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 bg-white/70">
-                <Trophy className="h-3.5 w-3.5" />
-                {/* Screen-reader label so the visuals are accessible */}
-                <span className="sr-only">
-                  Scoring: first {ev.scoring?.first ?? 3} points, second {ev.scoring?.second ?? 2} points, third {ev.scoring?.third ?? 1} point.
-                </span>
-
-                {/* Coins */}
-                <span className="flex items-center gap-1.5" aria-hidden>
-                  <Coin tone="gold" className={isLive ? "coin-shimmer" : ""}>
-        {ev.scoring?.first ?? 3}
-      </Coin>
-                  <Coin tone="silver">{ev.scoring?.second ?? 2}</Coin>
-                  <Coin tone="bronze">{ev.scoring?.third ?? 1}</Coin>
-                </span>
-              </span>
-            )}
-            {ev.hostFamily && (
-              <span className="inline-flex items-center gap-1 rounded-full px-2 py-1 bg-white/70">
-                Host: {ev.hostFamily}
-              </span>
-            )}
-          </div>
-
-          {ev.description && (
-            <p className="text-sm opacity-90 leading-relaxed pt-1">{ev.description}</p>
-          )}
         </div>
       </div>
-    </div>
+    </GlassCard>
   );
 }
