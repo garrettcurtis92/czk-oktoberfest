@@ -2,18 +2,25 @@
 
 import React from "react";
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
-  DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { setStatusAction, clearLiveAction, finishPastAction, resetFinishedAction } from "./actions";
+import {
+  setStatusAction,
+  clearLiveAction,
+  finishPastAction,
+  resetFinishedAction,
+} from "./actions";
 import { MoreHorizontal, ChevronDown } from "lucide-react";
 
 type Row = {
   id: number;
   title: string;
-  day: string;               // "YYYY-MM-DD"
-  startTime: string | null;  // "HH:MM"
+  day: string; // "YYYY-MM-DD"
+  startTime: string | null; // "HH:MM"
   locationLabel: string | null;
   status: "scheduled" | "live" | "paused" | "finished";
 };
@@ -37,39 +44,46 @@ export default function AdminClient({ rows }: { rows: Row[] }) {
               Bulk Actions <ChevronDown className="ml-1 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
+
+          {/* BULK MENU — auto-closes because each item is a DropdownMenuItem asChild */}
           <DropdownMenuContent
   align="end"
-  className="rounded-xl bg-white text-gray-900 shadow-xl border border-gray-200 p-1"
+  sideOffset={8}
+  collisionPadding={12}
+  className="glass w-56 rounded-xl shadow-lg border border-black/5 p-1 z-50 max-h-[60vh] overflow-y-auto"
 >
-  <div className="px-2 py-1.5 text-xs font-medium text-gray-500">Bulk Actions</div>
-  <div className="h-px bg-gray-200 my-1" />
+  <div className="px-3 py-1.5 text-xs font-medium text-charcoal/60">Bulk Actions</div>
+  <div className="h-px bg-black/10 my-1" />
 
-  <form action={clearLiveAction}>
+  <DropdownMenuItem asChild>
     <button
       type="submit"
-      className="block w-full text-left px-3 py-2 rounded-md hover:bg-gray-100"
+      formAction={clearLiveAction}
+      className="w-full text-left px-3 py-2.5 rounded-md hover:bg-black/5 active:bg-black/10"
     >
       Clear Live
     </button>
-  </form>
+  </DropdownMenuItem>
 
-  <form action={finishPastAction}>
+  <DropdownMenuItem asChild>
     <button
       type="submit"
-      className="block w-full text-left px-3 py-2 rounded-md hover:bg-gray-100"
+      formAction={finishPastAction}
+      className="w-full text-left px-3 py-2.5 rounded-md hover:bg-black/5 active:bg-black/10"
     >
       Finish All Past
     </button>
-  </form>
+  </DropdownMenuItem>
 
-  <form action={resetFinishedAction}>
+  <DropdownMenuItem asChild>
     <button
       type="submit"
-      className="block w-full text-left px-3 py-2 rounded-md hover:bg-gray-100"
+      formAction={resetFinishedAction}
+      className="w-full text-left px-3 py-2.5 rounded-md hover:bg-black/5 active:bg-black/10"
     >
       Reset Finished → Scheduled
     </button>
-  </form>
+  </DropdownMenuItem>
 </DropdownMenuContent>
 
         </DropdownMenu>
@@ -93,27 +107,30 @@ export default function AdminClient({ rows }: { rows: Row[] }) {
                     <MoreHorizontal className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
+
+                {/* ROW MENU — each status submit is wrapped in DropdownMenuItem asChild */}
                 <DropdownMenuContent
-  align="end"
-  className="rounded-xl bg-white text-gray-900 shadow-xl border border-gray-200 p-1"
->
-  <div className="px-2 py-1.5 text-xs font-medium text-gray-500">Set Status</div>
-  <div className="h-px bg-gray-200 my-1" />
+                  align="end"
+                  className="rounded-xl bg-white text-gray-900 shadow-xl border border-gray-200 p-1"
+                >
+                  <div className="px-2 py-1.5 text-xs font-medium text-gray-500">Set Status</div>
+                  <div className="h-px bg-gray-200 my-1" />
 
-  {(["scheduled", "live", "paused", "finished"] as const).map((status) => (
-    <form key={status} action={setStatusAction}>
-      <input type="hidden" name="id" value={e.id} />
-      <input type="hidden" name="status" value={status} />
-      <button
-        type="submit"
-        className="block w-full text-left capitalize px-3 py-2 rounded-md hover:bg-gray-100"
-      >
-        {status}
-      </button>
-    </form>
-  ))}
-</DropdownMenuContent>
-
+                  {(["scheduled", "live", "paused", "finished"] as const).map((status) => (
+                    <form key={status} action={setStatusAction}>
+                      <input type="hidden" name="id" value={e.id} />
+                      <input type="hidden" name="status" value={status} />
+                      <DropdownMenuItem asChild>
+                        <button
+                          type="submit"
+                          className="block w-full text-left capitalize px-3 py-2 rounded-md hover:bg-gray-100"
+                        >
+                          {status}
+                        </button>
+                      </DropdownMenuItem>
+                    </form>
+                  ))}
+                </DropdownMenuContent>
               </DropdownMenu>
             </div>
           </li>
