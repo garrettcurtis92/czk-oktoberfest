@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { brackets, matches, teams } from "@/db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 type Match = {
   id: number;
@@ -33,19 +33,7 @@ export default async function BracketDetail({ params }: { params: { id: string }
     maxRound = Math.max(maxRound, m.round);
   });
 
-  // Fetch teams used
-  const teamIds = Array.from(
-    new Set(
-      ms
-        .flatMap(m => [m.teamAId, m.teamBId, m.winnerTeamId])
-        .filter((v): v is number => v !== null && v !== undefined)
-    )
-  );
-  const ts = teamIds.length
-    ? await db.select().from(teams).where(and())
-    : [];
-  // Build a map (some ORMs need `inArray`, but you can adapt if needed)
-  // If you have drizzle's inArray util available, use it. Otherwise, fetch all teams once and map client-side for now:
+  // Build a map: fetch all teams and map by id (small dataset, fine for now)
   const allTeams = await db.select().from(teams);
   const tmap = new Map(allTeams.map(t => [t.id, t]));
 

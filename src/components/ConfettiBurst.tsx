@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 export default function ConfettiBurst({
   count = 80,
-  durationMs = 1800,
+  durationMs = 5000,
   fireOnMount = false,
 }: {
   count?: number;
@@ -15,13 +15,11 @@ export default function ConfettiBurst({
   useEffect(() => {
     const reduce =
       typeof window !== "undefined" &&
-      window.matchMedia &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  if (reduce) return;
+      window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+    if (reduce) return;
 
     function fire() {
-      // ensure once per session
+      // once per session
       if (sessionStorage.getItem("confetti_seen") === "1") return;
       sessionStorage.setItem("confetti_seen", "1");
 
@@ -33,7 +31,7 @@ export default function ConfettiBurst({
       root.style.zIndex = "60";
       document.body.appendChild(root);
 
-      const colors = ["#2563eb", "#f59e0b", "#10b981", "#ef4444", "#8b5cf6", "#eab308"];
+      const colors = ["#2563eb","#f59e0b","#10b981","#ef4444","#8b5cf6","#eab308"];
 
       for (let i = 0; i < count; i++) {
         const p = document.createElement("span");
@@ -60,12 +58,7 @@ export default function ConfettiBurst({
             { transform: `translateY(${travel}vh) rotate(${rot + 120}deg)`, opacity: 0.9 },
             { transform: `translateY(${travel + 5}vh) rotate(${rot + 240}deg)`, opacity: 0 },
           ],
-          {
-            duration: durationMs + Math.random() * 600,
-            delay,
-            easing: "cubic-bezier(.2,.8,.2,1)",
-            fill: "forwards",
-          }
+          { duration: durationMs + Math.random() * 600, delay, easing: "cubic-bezier(.2,.8,.2,1)", fill: "forwards" }
         );
 
         root.appendChild(p);
@@ -74,26 +67,17 @@ export default function ConfettiBurst({
       setTimeout(() => root.remove(), durationMs + 1200);
     }
 
-    // If the caller wants the confetti to fire immediately on mount,
-    // fire now and don't wait for any splash event.
+    // If caller requested firing immediately on mount, do it now.
     if (fireOnMount) {
       fire();
       return;
     }
 
-    const splashSeen = sessionStorage.getItem("splash_seen") === "1";
-
-    if (splashSeen) {
-      // splash already happened this session → fire now (once)
-      fire();
-      return;
-    }
-
-    // wait for splash to finish
+    // Otherwise wait for the splash to finish.
     const handler = () => fire();
     window.addEventListener("splash-finished", handler);
     return () => window.removeEventListener("splash-finished", handler);
-  }, [count, durationMs]);
+  }, [count, durationMs, fireOnMount]);
 
   return null;
 }

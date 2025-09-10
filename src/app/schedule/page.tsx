@@ -97,7 +97,7 @@ function formatCountdown(ms: number) {
 }
 
 
-function LiveProgress({ ev, tick }: { ev: EventRow; tick?: number }) {
+function LiveProgress({ ev }: { ev: EventRow }) {
   if (!ev.startTime || !ev.endTime) return null;
 
   const [sH, sM] = ev.startTime.split(":").map(Number);
@@ -236,12 +236,7 @@ useEffect(() => {
   }
 }, [liveId]);
 
-// Tick for live progress updates
-const [tick, setTick] = useState(0);
-useEffect(() => {
-  const id = setInterval(() => setTick((t) => t + 1), 5000); // Update every 5 seconds
-  return () => clearInterval(id);
-}, []);
+// Tick for live progress updates (no longer needed)
 
 
   // active tab (prefer live day)
@@ -348,7 +343,7 @@ useEffect(() => {
               <TabsContent key={day} value={day} className="mt-4 space-y-3">
                 {items
   .sort((a, b) => (a.startTime ?? "99:99").localeCompare(b.startTime ?? "99:99"))
-  .map((ev, i) => (
+                  .map((ev, i) => (
     <motion.div
       key={ev.id}
       initial={{ opacity: 0, y: 8 }}
@@ -359,7 +354,7 @@ useEffect(() => {
       }
       transition={{ duration: ev.id === shakeLiveId ? 0.6 : 0.15, delay: i * 0.03 }}
     >
-      <EventCard ev={ev} tick={tick} />
+  <EventCard ev={ev} />
     </motion.div>
   ))}
 
@@ -451,7 +446,7 @@ function CoinStyles() {
 }
 
 
-function EventCard({ ev, tick }: { ev: UiEvent; tick?: number }) {
+function EventCard({ ev }: { ev: UiEvent }) {
   const isLive = ev.status === "live";
   return (
     <div
@@ -461,7 +456,7 @@ function EventCard({ ev, tick }: { ev: UiEvent; tick?: number }) {
         isLive && "ring-2 ring-team-red/70"
       )}
     >
-      {isLive && <LiveProgress ev={ev} tick={tick} />}
+  {isLive && <LiveProgress ev={ev} />}
 
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-2 flex-1">

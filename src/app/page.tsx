@@ -90,7 +90,7 @@ export default async function Home() {
   </div>
 
   {/* Confetti (fires once when the page loads) */}
-  <ConfettiBurst fireOnMount />
+  <ConfettiBurst fireOnMount={true} />
 </section>
 
 

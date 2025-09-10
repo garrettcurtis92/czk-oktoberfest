@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 
 export default function SplashVerse() {
+  const displayMs = 2600; // longer display
+  const fadeMs = 600; // slightly longer fade
   const [visible, setVisible] = useState(false);
   const [hidden, setHidden] = useState(false);
 
@@ -21,10 +23,10 @@ export default function SplashVerse() {
       const t2 = setTimeout(() => {
         setHidden(true);
         window.dispatchEvent(new CustomEvent("splash-finished"));
-      }, 500);
+      }, fadeMs);
 
       return () => clearTimeout(t2);
-    }, 1800);
+    }, displayMs - fadeMs);
 
     return () => clearTimeout(t);
   }, []);

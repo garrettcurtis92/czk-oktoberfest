@@ -1,8 +1,9 @@
 import { unlockAction, logoutAction } from "./actions";
 
-export default function UnlockPage({ searchParams }: { searchParams?: Record<string, string | string[] | undefined> }) {
-  const next = (searchParams?.next as string) || "/admin";
-  const error = searchParams?.error ? true : false;
+export default async function UnlockPage({ searchParams }: { searchParams?: Record<string, string | string[] | undefined> }) {
+  const params = await searchParams;
+  const next = (params?.next as string) || "/admin";
+  const error = params?.error ? true : false;
 
   return (
     <main className="mx-auto max-w-sm p-6 space-y-4">
