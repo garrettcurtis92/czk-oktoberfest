@@ -32,3 +32,28 @@ body { background: #FFF5E9; color: #1e2230; }
   color: rgb(243 244 246);
   border: 1px solid rgb(55 65 81);
 }
+:root {
+  --glass-bg: 255 255 255;        /* base RGB for white */
+  --glass-alpha: 0.8;             /* backdrop background alpha */
+  --glass-blur: 16px;             /* backdrop blur radius */
+  --glass-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  --glass-border: 0,0,0,0.05;     /* border rgba */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --glass-bg: 20 20 20;
+    --glass-alpha: 0.6;
+    --glass-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    --glass-border: 255,255,255,0.08;
+  }
+}
+
+/* Reusable glass container */
+.glass {
+  background-color: rgba(var(--glass-bg), var(--glass-alpha));
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  box-shadow: var(--glass-shadow);
+  border: 1px solid rgba(var(--glass-border));
+}

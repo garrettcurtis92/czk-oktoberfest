@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { SiteHeader, BottomTabs } from "@/components/nav/site-nav";
+import PageTransition from "@/components/PageTransition";
 
 export const metadata: Metadata = {
   title: "CZK Oktoberfest",
@@ -23,11 +24,13 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="bg-sand min-h-dvh text-charcoal">
+      <body className="bg-sand text-charcoal">
         <SiteHeader />
-        <div className="mx-auto max-w-3xl px-4 pb-24 pt-3">{children}</div>
+        <main className="mx-auto max-w-3xl px-4 py-4">
+          <PageTransition>{children}</PageTransition>
+        </main>
         <BottomTabs />
       </body>
     </html>
   );
-}
+};
