@@ -27,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={`$bg-sand text-charcoal`}>
-        <SplashVerse />
+        <SplashVerse displayMs={3200} fadeMs={700} />
         <ConfettiBurst />
         <SiteHeader />
         <main className="mx-auto max-w-3xl px-4 py-4">
