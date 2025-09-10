@@ -14,7 +14,7 @@
   --tw-color-team-purple: #8C59D9;
 }
 
-body { background: #FFF5E9; color: #1e2230; }
+body { background: white; color: #1e2230; }
 
 
 /* Override shadcn dropdowns to always look like cards in light mode */

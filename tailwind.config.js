@@ -12,7 +12,7 @@ module.exports = {
         display: ["Fraunces", "serif"],
       },
       colors: {
-        sand: "#FFF5E9",
+        sand: "white",
         charcoal: "#2F3440",
         team: {
           red: "#E45757",

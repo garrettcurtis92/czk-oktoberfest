@@ -178,24 +178,13 @@ function TeamCard({ team }: { team: TeamRow }) {
           </div>
 
           {/* captain line */}
-          <p className="mt-1 text-sm">
-            <span className="opacity-70">Team Captain:</span> {captain.name}
-          </p>
-
-          {/* meta chips */}
-          <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
-            <span className="inline-flex items-center gap-1 rounded-full px-2 py-1 bg-white/70">
-              <span className="opacity-70">Color</span>
-              <span
-                className="inline-block size-2 rounded-full"
-                style={{ background: teamVar }}
-                aria-hidden
-              />
-            </span>
-            {/* placeholder for roster/cta */}
+          <div className="mt-1 flex items-center justify-between">
+            <p className="text-sm truncate">
+              <span className="opacity-70"></span> {captain.name}
+            </p>
             <a
               href={`/teams/${team.color}`}
-              className="inline-flex items-center gap-1 rounded-full px-2 py-1 border border-black/10 bg-white/60 hover:bg-white/80 transition"
+              className="inline-flex items-center gap-1 rounded-full px-2 py-1 border border-black/10 bg-white/60 hover:bg-white/80 transition text-xs flex-shrink-0"
             >
               View team
             </a>

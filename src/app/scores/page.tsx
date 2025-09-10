@@ -4,6 +4,8 @@ export const revalidate = 0;
 
 import { db } from "@/db";
 import { sql } from "drizzle-orm";
+import GlassCard from "@/components/GlassCard";
+import ColorChips from "@/components/ColorChips";
 
 type TeamRow = {
   id: number;
@@ -24,9 +26,16 @@ export default async function ScoresPage() {
 
   return (
     <main className="p-4 space-y-4">
-      <section className="rounded-2xl p-4 bg-white/70 backdrop-blur shadow">
+      <GlassCard className="p-4">
         <h1 className="text-xl font-display mb-2">Scores</h1>
-        <ol className="space-y-2">
+        
+        {/* Team color chips */}
+        <ColorChips
+          colors={["#F39B2B", "#F3D23B", "#36B37E", "#2F80ED", "#E45757", "#8C59D9"]}
+          label="Team colors: Orange, Yellow, Green, Blue, Red, Purple"
+        />
+        
+        <ol className="space-y-2 mt-4">
           {teams.map((t, i) => (
             <li key={t.id} className="flex items-center justify-between">
               <span className="flex items-center gap-2 min-w-0">
@@ -41,7 +50,7 @@ export default async function ScoresPage() {
             </li>
           ))}
         </ol>
-      </section>
+      </GlassCard>
     </main>
   );
 }

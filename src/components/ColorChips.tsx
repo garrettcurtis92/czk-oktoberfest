@@ -13,7 +13,7 @@ export default function ColorChips({
       {colors.map((c, i) => (
         <span
           key={`${c}-${i}`}
-          className="h-3 w-3 shrink-0 rounded-full ring-2 ring-white/80"
+          className="h-4 w-4 shrink-0 rounded-full ring-2 ring-white/80"
           style={{ background: c }}
           aria-hidden
         />
