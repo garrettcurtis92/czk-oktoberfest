@@ -2,10 +2,6 @@
 
 import { useEffect, useState } from "react";
 
-/**
- * Full-screen verse splash that fades out after ~1.8s
- * and only shows once per session (via sessionStorage).
- */
 export default function SplashVerse() {
   const [visible, setVisible] = useState(false);
   const [hidden, setHidden] = useState(false);
@@ -13,17 +9,20 @@ export default function SplashVerse() {
   useEffect(() => {
     const seen = sessionStorage.getItem("splash_seen");
     if (seen) {
-      setHidden(true); // don’t render at all on subsequent pages
+      setHidden(true);
       return;
     }
     setVisible(true);
+
     const t = setTimeout(() => {
-      // trigger fade-out
       setVisible(false);
-      // mark as seen
       sessionStorage.setItem("splash_seen", "1");
-      // after fade transition, remove from DOM
-      const t2 = setTimeout(() => setHidden(true), 500);
+
+      const t2 = setTimeout(() => {
+        setHidden(true);
+        window.dispatchEvent(new CustomEvent("splash-finished"));
+      }, 500);
+
       return () => clearTimeout(t2);
     }, 1800);
 
@@ -39,14 +38,16 @@ export default function SplashVerse() {
       className={[
         "fixed inset-0 z-[100] grid place-items-center",
         "bg-gradient-to-br from-amber-50 via-white to-emerald-50",
-        "transition-opacity duration-1000",
+        "transition-opacity duration-500",
         visible ? "opacity-100" : "opacity-0",
       ].join(" ")}
       onClick={() => {
-        // allow tap to dismiss early
         sessionStorage.setItem("splash_seen", "1");
         setVisible(false);
-        setTimeout(() => setHidden(true), 400);
+        setTimeout(() => {
+          setHidden(true);
+          window.dispatchEvent(new CustomEvent("splash-finished"));
+        }, 400);
       }}
     >
       <div
