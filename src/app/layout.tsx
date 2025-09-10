@@ -7,19 +7,22 @@ import ConfettiBurst from "@/components/ConfettiBurst";
 
 export const metadata: Metadata = {
   title: "CZK Oktoberfest",
-  description: "Family games, schedule, and live scores",
-  icons: {
-    icon: "/favicon.svg",
-    shortcut: "/favicon.svg",
-    apple: "/apple-touch-icon.svg",
-  },
-  manifest: "/manifest.json",
+  description: "Family games & fun at the annual CZK Oktoberfest",
   openGraph: {
-    images: "/logo.svg",
-  },
-  twitter: {
-    card: "summary_large_image",
-    images: ["/logo.svg"],
+    title: "CZK Oktoberfest",
+    description: "Track teams, events, and scores at Oktoberfest!",
+    url: "https://czk-oktoberfest.vercel.app",
+    siteName: "CZK Oktoberfest",
+    images: [
+      {
+        url: "/CZK-Logo.jpg", // <-- put this in /public/CZK-Logo.jpg
+        width: 1200,
+        height: 630,
+        alt: "CZK Oktoberfest App",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
   },
 };
 
