@@ -24,11 +24,18 @@ export const metadata: Metadata = {
     locale: "en_US",
     type: "website",
   },
+  manifest: "/manifest.json",
+  icons: {
+    icon: "/icons/icon-192.png",
+    apple: "/icons/icon-192.png",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
+      <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+
       <body className={`$bg-sand text-charcoal`}>
         <SplashVerse displayMs={6000} fadeMs={700} />
         <ConfettiBurst />
