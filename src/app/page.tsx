@@ -2,9 +2,14 @@
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
+
 import { db } from "@/db";
 import { sql } from "drizzle-orm";
 import Image from "next/image";
+import ConfettiBurst from "@/components/ConfettiBurst";
+import ColorChips from "@/components/ColorChips";
+
+
 
 /** DB rows */
 type TeamRow = {
@@ -48,20 +53,50 @@ export default async function Home() {
 
   return (
     <main className="p-4 space-y-4">
-      {/* Welcome / Hero (glassy) */}
-      <section className="rounded-3xl p-6 shadow bg-gradient-to-br from-white/80 via-white/60 to-white/30 backdrop-blur">
-        <h1 className="text-3xl font-display tracking-tight">Welcome to CZK Oktoberfest</h1>
-        <p className="opacity-80 mt-1">
-          A long-weekend of games, dinners, and family fun on the ranch. Explore the schedule,
-          check team rosters, and get ready to compete!
-        </p>
-      </section>
+      
+{/* Team Captains hero */}
+<section className="relative rounded-3xl p-8 shadow bg-gradient-to-br from-white/80 via-white/60 to-white/30 backdrop-blur overflow-hidden">
+  {/* subtle blobs */}
+  <div className="absolute -top-20 -right-16 h-48 w-48 rounded-full bg-amber-300/20 blur-3xl" />
+  <div className="absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-emerald-300/20 blur-3xl" />
+
+  <h1 className="text-3xl md:text-4xl font-display tracking-tight text-center">
+    Team Captains!
+  </h1>
+  <p className="mt-2 text-center text-sm md:text-base text-charcoal/70">
+    Meet the leaders, rally your squad, and get ready to compete.
+  </p>
+
+  {/* Team color chips */}
+  <ColorChips
+    overflow-visible
+    colors={["#F39B2B", "#F3D23B", "#36B37E", "#2F80ED", "#E45757", "#8C59D9"]}
+    label="Team colors: Blue, Orange, Green, Red"
+  />
+
+  <div className="mt-6 flex justify-center gap-3">
+    <a
+      href="/teams"
+      className="rounded-xl px-4 py-2 text-sm font-medium bg-charcoal text-white hover:opacity-95 transition"
+    >
+      View Teams
+    </a>
+    <a
+      href="/leaderboard"
+      className="rounded-xl px-4 py-2 text-sm font-medium border border-charcoal/20 hover:bg-black/5 transition"
+    >
+      Leaderboard
+    </a>
+  </div>
+
+  {/* Confetti (fires once when the page loads) */}
+  <ConfettiBurst fireOnMount />
+</section>
+
 
       {/* Teams (glassy cards like Schedule) */}
       <section className="rounded-2xl p-4 bg-white/70 backdrop-blur shadow">
         <div className="mb-3 flex items-baseline justify-between">
-          <h2 className="text-xl font-display">Teams</h2>
-          <p className="text-sm opacity-70">Captains shown — photos & bios coming soon</p>
         </div>
 
         {teams.length === 0 ? (

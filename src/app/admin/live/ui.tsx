@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,6 +16,44 @@ import {
 } from "./actions";
 import { MoreHorizontal, ChevronDown } from "lucide-react";
 
+
+function RowMenu({ id }: { id: number }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenuTrigger asChild>
+        <Button size="icon" variant="outline" className="rounded-xl">
+          <MoreHorizontal className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent
+        align="end"
+        className="rounded-xl bg-white text-gray-900 shadow-xl border border-gray-200 p-1"
+      >
+        <div className="px-2 py-1.5 text-xs font-medium text-gray-500">Set Status</div>
+        <div className="h-px bg-gray-200 my-1" />
+
+        {(["scheduled", "live", "paused", "finished"] as const).map((status) => (
+          <DropdownMenuItem
+            key={status}
+            onSelect={(ev) => {
+              ev.preventDefault(); // don’t let Radix cancel the submit
+              (document.getElementById(`set-${id}-${status}`) as HTMLFormElement)?.requestSubmit();
+              setOpen(false); // close after submitting
+            }}
+            className="capitalize"
+          >
+            {status}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+
 type Row = {
   id: number;
   title: string;
@@ -26,7 +64,8 @@ type Row = {
 };
 
 export default function AdminClient({ rows }: { rows: Row[] }) {
-  // No searchParams/key needed anymore — middleware + cookie gates access.
+  // Sort by day + start time
+  const [bulkOpen, setBulkOpen] = useState(false);
   const safeRows = [...rows].sort((a, b) => {
     const aKey = `${a.day} ${a.startTime ?? "99:99"}`;
     const bKey = `${b.day} ${b.startTime ?? "99:99"}`;
@@ -35,60 +74,66 @@ export default function AdminClient({ rows }: { rows: Row[] }) {
 
   return (
     <main className="p-4 space-y-4">
+      {/* ---------- Bulk actions ---------- */}
+      {/* Hidden forms (persist in DOM) */}
+      <form id="bulk-clear-live" action={clearLiveAction} className="hidden" />
+      <form id="bulk-finish-past" action={finishPastAction} className="hidden" />
+      <form id="bulk-reset-finished" action={resetFinishedAction} className="hidden" />
+
       <header className="flex items-center justify-between gap-2">
         <h1 className="text-2xl font-display">Event Status Controls</h1>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="rounded-xl">
-              Bulk Actions <ChevronDown className="ml-1 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
+        <DropdownMenu open={bulkOpen} onOpenChange={setBulkOpen}>
+  <DropdownMenuTrigger asChild>
+    <Button variant="outline" className="rounded-xl">
+      Bulk Actions <ChevronDown className="ml-1 h-4 w-4" />
+    </Button>
+  </DropdownMenuTrigger>
 
-          {/* BULK MENU — auto-closes because each item is a DropdownMenuItem asChild */}
-          <DropdownMenuContent
-  align="end"
-  sideOffset={8}
-  collisionPadding={12}
-  className="glass w-56 rounded-xl shadow-lg border border-black/5 p-1 z-50 max-h-[60vh] overflow-y-auto"
->
-  <div className="px-3 py-1.5 text-xs font-medium text-charcoal/60">Bulk Actions</div>
-  <div className="h-px bg-black/10 my-1" />
+  <DropdownMenuContent
+    align="end"
+    sideOffset={8}
+    collisionPadding={12}
+    className="glass w-56 rounded-xl shadow-lg border border-black/5 p-1 z-50 max-h-[60vh] overflow-y-auto"
+  >
+    <div className="px-3 py-1.5 text-xs font-medium text-charcoal/60">Bulk Actions</div>
+    <div className="h-px bg-black/10 my-1" />
 
-  <DropdownMenuItem asChild>
-    <button
-      type="submit"
-      formAction={clearLiveAction}
-      className="w-full text-left px-3 py-2.5 rounded-md hover:bg-black/5 active:bg-black/10"
+    <DropdownMenuItem
+      onSelect={(e) => {
+        e.preventDefault();
+        (document.getElementById("bulk-clear-live") as HTMLFormElement)?.requestSubmit();
+        setBulkOpen(false);
+      }}
     >
       Clear Live
-    </button>
-  </DropdownMenuItem>
+    </DropdownMenuItem>
 
-  <DropdownMenuItem asChild>
-    <button
-      type="submit"
-      formAction={finishPastAction}
-      className="w-full text-left px-3 py-2.5 rounded-md hover:bg-black/5 active:bg-black/10"
+    <DropdownMenuItem
+      onSelect={(e) => {
+        e.preventDefault();
+        (document.getElementById("bulk-finish-past") as HTMLFormElement)?.requestSubmit();
+        setBulkOpen(false);
+      }}
     >
       Finish All Past
-    </button>
-  </DropdownMenuItem>
+    </DropdownMenuItem>
 
-  <DropdownMenuItem asChild>
-    <button
-      type="submit"
-      formAction={resetFinishedAction}
-      className="w-full text-left px-3 py-2.5 rounded-md hover:bg-black/5 active:bg-black/10"
+    <DropdownMenuItem
+      onSelect={(e) => {
+        e.preventDefault();
+        (document.getElementById("bulk-reset-finished") as HTMLFormElement)?.requestSubmit();
+        setBulkOpen(false);
+      }}
     >
       Reset Finished → Scheduled
-    </button>
-  </DropdownMenuItem>
-</DropdownMenuContent>
+    </DropdownMenuItem>
+  </DropdownMenuContent>
+</DropdownMenu>
 
-        </DropdownMenu>
       </header>
 
+      {/* ---------- Per-row controls ---------- */}
       <ul className="space-y-2">
         {safeRows.map((e) => (
           <li key={e.id} className="rounded-2xl bg-white/70 backdrop-blur shadow p-3">
@@ -101,37 +146,26 @@ export default function AdminClient({ rows }: { rows: Row[] }) {
                 <div className="text-xs mt-1">Current: {e.status}</div>
               </div>
 
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button size="icon" variant="outline" className="rounded-xl">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
+              {/* Hidden forms for this row (persist in DOM, not inside menu) */}
+              <form id={`set-${e.id}-scheduled`} action={setStatusAction} className="hidden">
+                <input type="hidden" name="id" value={e.id} />
+                <input type="hidden" name="status" value="scheduled" />
+              </form>
+              <form id={`set-${e.id}-live`} action={setStatusAction} className="hidden">
+                <input type="hidden" name="id" value={e.id} />
+                <input type="hidden" name="status" value="live" />
+              </form>
+              <form id={`set-${e.id}-paused`} action={setStatusAction} className="hidden">
+                <input type="hidden" name="id" value={e.id} />
+                <input type="hidden" name="status" value="paused" />
+              </form>
+              <form id={`set-${e.id}-finished`} action={setStatusAction} className="hidden">
+                <input type="hidden" name="id" value={e.id} />
+                <input type="hidden" name="status" value="finished" />
+              </form>
 
-                {/* ROW MENU — each status submit is wrapped in DropdownMenuItem asChild */}
-                <DropdownMenuContent
-                  align="end"
-                  className="rounded-xl bg-white text-gray-900 shadow-xl border border-gray-200 p-1"
-                >
-                  <div className="px-2 py-1.5 text-xs font-medium text-gray-500">Set Status</div>
-                  <div className="h-px bg-gray-200 my-1" />
-
-                  {(["scheduled", "live", "paused", "finished"] as const).map((status) => (
-                    <form key={status} action={setStatusAction}>
-                      <input type="hidden" name="id" value={e.id} />
-                      <input type="hidden" name="status" value={status} />
-                      <DropdownMenuItem asChild>
-                        <button
-                          type="submit"
-                          className="block w-full text-left capitalize px-3 py-2 rounded-md hover:bg-gray-100"
-                        >
-                          {status}
-                        </button>
-                      </DropdownMenuItem>
-                    </form>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+             <RowMenu id={e.id} />
+              
             </div>
           </li>
         ))}

@@ -7,6 +7,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Clock, MapPin, Trophy, Gamepad2, Utensils, PartyPopper } from "lucide-react";
 import { motion } from "framer-motion";
 
+
 type EventRow = {
   id: number;
   title: string;
@@ -267,7 +268,7 @@ useEffect(() => {
     return (
       <main className="p-6">
         <div className="rounded-2xl p-8 text-center bg-white/70 backdrop-blur shadow">
-          <h2 className="text-xl font-display mb-1">Loading events...</h2>
+          <h2 className="text-xl font-display mb-1">Romans 15:13</h2>
         </div>
       </main>
     );
