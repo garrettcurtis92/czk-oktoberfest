@@ -4,6 +4,7 @@ import { SiteHeader, BottomTabs } from "@/components/nav/site-nav";
 import PageTransition from "@/components/PageTransition";
 import SplashVerse from "@/components/SplashVerse";
 import ConfettiBurst from "@/components/ConfettiBurst";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "CZK Oktoberfest",
@@ -36,7 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <link rel="apple-touch-icon" href="/icons/icon-192.png" />
 
-      <body className={`$bg-sand text-charcoal`}>
+      <body className="bg-sand text-charcoal">
         <SplashVerse displayMs={6000} fadeMs={700} />
         <ConfettiBurst />
         <SiteHeader />
@@ -44,6 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <PageTransition>{children}</PageTransition>
         </main>
         <BottomTabs />
+        <Toaster />
       </body>
     </html>
   );

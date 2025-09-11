@@ -5,6 +5,7 @@ export const revalidate = 0;
 import { db } from "@/db";
 import { Crown } from "lucide-react";
 import { sql } from "drizzle-orm";
+import LiveTicker from "@/components/LiveTicker";
 
 type TeamRow = {
   id: number;
@@ -56,10 +57,20 @@ export default async function LeaderboardPage() {
 
   return (
     <main className="p-4 space-y-4">
+      
+      {/* Live/Next Event Ticker */}
+      <LiveTicker />
+
       {/* Hero / Header */}
-      <section className="rounded-3xl p-6 shadow bg-gradient-to-br from-white/80 via-white/60 to-white/30 backdrop-blur">
-        <h1 className="text-3xl font-display tracking-tight">Leaderboard</h1>
-        <p className="opacity-80 mt-1">
+      <section className="relative rounded-3xl p-8 shadow bg-gradient-to-br from-white/80 via-white/60 to-white/30 backdrop-blur overflow-hidden">
+        {/* subtle blobs */}
+        <div className="absolute -top-20 -right-16 h-48 w-48 rounded-full bg-amber-300/20 blur-3xl" />
+        <div className="absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-emerald-300/20 blur-3xl" />
+
+        <h1 className="text-3xl md:text-4xl font-display tracking-tight text-center">
+          Leaderboard
+        </h1>
+        <p className="mt-2 text-center text-sm md:text-base text-charcoal/70">
           Live team standings and the most recent scoring updates.
         </p>
       </section>

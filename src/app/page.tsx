@@ -7,8 +7,8 @@ import { db } from "@/db";
 import { sql } from "drizzle-orm";
 import Image from "next/image";
 import CaptainCard from "@/components/CaptainsCard";
-
 import ColorChips from "@/components/ColorChips";
+import LiveTicker from "@/components/LiveTicker";
 
 
 
@@ -55,6 +55,9 @@ export default async function Home() {
   return (
     <main className="p-4 space-y-4">
       
+      {/* Live/Next Event Ticker */}
+      <LiveTicker />
+
 {/* Team Captains hero */}
 <section className="relative rounded-3xl p-8 shadow bg-gradient-to-br from-white/80 via-white/60 to-white/30 backdrop-blur overflow-hidden">
   {/* subtle blobs */}

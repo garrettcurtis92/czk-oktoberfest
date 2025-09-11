@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, integer, timestamp, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, serial, varchar, integer, timestamp, pgEnum, boolean, smallint } from "drizzle-orm/pg-core";
 
 export const colorEnum = pgEnum("team_color", ["red","orange","yellow","green","blue","purple"]);
 export const eventType = pgEnum("event_type", ["game","dinner","social"]);
@@ -38,39 +38,40 @@ export const scores = pgTable("scores", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-
-// --- Brackets ---
-export const bracketFormat = pgEnum("bracket_format", ["single_elim", "double_elim", "round_robin"]);
-export const matchStatus = pgEnum("match_status", ["scheduled", "in_progress", "final"]);
-
+// --- Brackets (new) ---
+// Core tournament container per event & game type
 export const brackets = pgTable("brackets", {
   id: serial("id").primaryKey(),
-  title: varchar("title", { length: 64 }).notNull(), // e.g., "Cornhole 2025"
-  format: bracketFormat("format").default("single_elim").notNull(),
+  eventId: integer("event_id").notNull(), // FK → events.id (logical)
+  game: varchar("game", { length: 16 }).notNull(), // 'cornhole' | 'pickleball' | 'pingpong'
+  isLocked: boolean("is_locked").notNull().default(false),
+  createdBy: varchar("created_by", { length: 64 }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-// Mapping which team is in a bracket and their seed
-export const bracketTeams = pgTable("bracket_teams", {
+// Seeding table: which team has which seed in a bracket
+export const bracketSeeds = pgTable("bracket_seeds", {
   id: serial("id").primaryKey(),
   bracketId: integer("bracket_id").notNull(),
   teamId: integer("team_id").notNull(),
-  seed: integer("seed").notNull(), // 1..N
+  seedNumber: integer("seed_number").notNull(), // 1..N
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-// Each match in a bracket. For single-elim, rounds increase each step.
-// "position" is the index within a round (column).
-export const matches = pgTable("matches", {
+// Matches table with forward-links to the next match (winner advances)
+export const bracketMatches = pgTable("bracket_matches", {
   id: serial("id").primaryKey(),
   bracketId: integer("bracket_id").notNull(),
-  round: integer("round").notNull(),      // 1 = first round, 2 = semifinals, etc.
-  position: integer("position").notNull(), // within round (1..N)
-  teamAId: integer("team_a_id"),          // may be null until determined
-  teamBId: integer("team_b_id"),
-  scoreA: integer("score_a").default(0).notNull(),
-  scoreB: integer("score_b").default(0).notNull(),
+  roundNumber: integer("round_number").notNull(), // 1 = first round
+  matchNumber: integer("match_number").notNull(), // position within round (1..N)
+  team1Id: integer("team1_id"), // nullable until known
+  team2Id: integer("team2_id"),
+  team1Score: integer("team1_score").notNull().default(0),
+  team2Score: integer("team2_score").notNull().default(0),
   winnerTeamId: integer("winner_team_id"),
-  status: matchStatus("status").default("scheduled").notNull(),
+  nextMatchId: integer("next_match_id"), // link to downstream match
+  slotInNext: smallint("slot_in_next"),   // 1 or 2 (which slot the winner occupies in next match)
+  startsAt: timestamp("starts_at"),
+  completedAt: timestamp("completed_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

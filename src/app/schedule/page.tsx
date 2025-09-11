@@ -7,6 +7,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Clock, MapPin, Trophy, Gamepad2, Utensils, PartyPopper } from "lucide-react";
 import { motion } from "framer-motion";
 import GlassCard from "@/components/GlassCard";
+import LiveTicker from "@/components/LiveTicker";
 
 
 
@@ -285,48 +286,22 @@ useEffect(() => {
   return (
     <main className="p-4 space-y-4">
       <CoinStyles />
-      {/* Hero */}
-      <section className="rounded-3xl p-6 shadow bg-gradient-to-br from-white/80 via-white/60 to-white/30 backdrop-blur">
-        <h1 className="text-3xl font-display tracking-tight">CZK Oktoberfest</h1>
-        <p className="opacity-70">{dateRange(uiRows)} · On the Ranch</p>
-        </section>
 
-      {/* Now Playing chip */}
-     {/* Live chip OR Next Up chip */}
-{live ? (
-  <div className="sticky top-[64px] z-10 -mx-4 px-4">
-    <button
-      onClick={() => jumpTo(live.day, live.id)}
-      className={`mx-auto flex items-center gap-2 rounded-full text-white px-3 py-1.5 shadow ${
-        live.status === "paused" ? "bg-yellow-500" : "bg-team-red"
-      }`}
-    >
-      <span className="inline-block size-2 rounded-full bg-white animate-pulse" />
-      <span className="text-sm font-medium">Now Playing:</span>
-      <span className="text-sm font-semibold truncate max-w-[50vw]">{live.title}</span>
-      {live.startTime && (
-        <span className="text-xs opacity-90">
-          · {live.startTime}
-          {live.endTime ? `–${live.endTime}` : ""}
-        </span>
-      )}
-    </button>
-  </div>
-) : upcoming ? (
-  <div className="sticky top-[64px] z-10 -mx-4 px-4">
-    <button
-      onClick={() => jumpTo(upcoming.day, upcoming.id)}
-      className="mx-auto flex items-center gap-2 rounded-full bg-team-blue text-white px-3 py-1.5 shadow"
-    >
-      <span className="inline-block size-2 rounded-full bg-white animate-pulse" />
-      <span className="text-sm font-medium">Next Up:</span>
-      <span className="text-sm font-semibold truncate max-w-[50vw]">{upcoming.title}</span>
-      {upcoming.startTime && (
-        <span className="text-xs opacity-90">· starts in {nextCountdown}</span>
-      )}
-    </button>
-  </div>
-) : null}
+      <LiveTicker />
+
+      {/* Hero */}
+      <section className="relative rounded-3xl p-8 shadow bg-gradient-to-br from-white/80 via-white/60 to-white/30 backdrop-blur overflow-hidden">
+        {/* subtle blobs */}
+        <div className="absolute -top-20 -right-16 h-48 w-48 rounded-full bg-amber-300/20 blur-3xl" />
+        <div className="absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-emerald-300/20 blur-3xl" />
+
+        <h1 className="text-3xl md:text-4xl font-display tracking-tight text-center">
+          Schedule!
+        </h1>
+        <p className="mt-2 text-center text-sm md:text-base text-charcoal/70">
+          View all events and activities for the weekend.
+        </p>
+      </section>
 
 
       {/* Tabs */}
@@ -460,8 +435,18 @@ function EventCard({ ev }: { ev: UiEvent }) {
   const isLive = ev.status === "live";
   const accent = eventAccent(ev);
 
-  // If this event should link to a bracket page
-  const bracketHref = ev.type === "game" ? `/brackets/${ev.id}` : undefined;
+  // Map game titles to specific bracket routes and include eventId
+  let bracketHref: string | undefined;
+  if (ev.type === 'game' && ev.title) {
+    const t = ev.title.toLowerCase();
+    const isCornhole = /cornhole/.test(t);
+    const isPickleball = /pickle\s*ball|pickleball/.test(t);
+    const isPingPong = /ping[- ]?pong/.test(t);
+
+    if (isCornhole) bracketHref = `/brackets/cornhole?eventId=${ev.id}`;
+    else if (isPickleball) bracketHref = `/brackets/pickleball?eventId=${ev.id}`;
+    else if (isPingPong) bracketHref = `/brackets/pingpong?eventId=${ev.id}`;
+  }
   return (
     <GlassCard
       accent={eventAccent(ev)}
