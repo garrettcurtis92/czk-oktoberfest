@@ -27,6 +27,8 @@ function generateOrder(size: number): number[] {
 }
 
 type Seed = { teamId: number; seed: number };
+type TeamData = { id: number; name: string; color: string; createdAt: Date };
+
 function buildFirstRoundPairs(seeds: Seed[]) {
   const n = seeds.length;
   const size = nextPowerOfTwo(n);
@@ -64,8 +66,8 @@ function normalizeCornholeScore(s: number) { return s > 21 ? 11 : s; }
     }
 
     // Deterministic seeding: sort by name asc (replace with: points desc, name asc if you track points)
-    const orderedTeams = [...allTeams].sort((a: any, b: any) => String(a.name).localeCompare(String(b.name)));
-    const seeds: Seed[] = orderedTeams.map((t: any, i: number) => ({ teamId: t.id as number, seed: i + 1 }));
+    const orderedTeams = [...allTeams].sort((a: TeamData, b: TeamData) => String(a.name).localeCompare(String(b.name)));
+    const seeds: Seed[] = orderedTeams.map((t: TeamData, i: number) => ({ teamId: t.id, seed: i + 1 }));
 
     // Create bracket container
     const [br] = await db

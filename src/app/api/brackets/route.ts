@@ -4,6 +4,16 @@ import { db } from '@/db';
 import { brackets, bracketMatches, teams } from '@/db/schema';
 import { eq, and, inArray } from 'drizzle-orm';
 
+type Team = {
+  id: number;
+  name: string;
+};
+
+type MatchWithTeams = typeof bracketMatches.$inferSelect & {
+  team1: Team | null;
+  team2: Team | null;
+};
+
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const eventIdStr = searchParams.get('eventId');
@@ -50,9 +60,9 @@ export async function GET(req: Request) {
   }
 
   // Group matches by roundNumber, and order by matchNumber
-  const byRound = new Map<number, any[]>();
+  const byRound = new Map<number, MatchWithTeams[]>();
   for (const row of m) {
-    const item = {
+    const item: MatchWithTeams = {
       ...row,
       team1: row.team1Id ? teamMap.get(row.team1Id) ?? null : null,
       team2: row.team2Id ? teamMap.get(row.team2Id) ?? null : null,

@@ -20,25 +20,53 @@ function useToast() {
 
 import { swapFirstRoundTeams, submitCornholeScore } from '../actions';
 
+type Team = {
+  id: number;
+  name: string;
+};
+
+type Match = {
+  id: number;
+  bracketId: number;
+  roundNumber: number;
+  matchNumber: number;
+  team1Id: number | null;
+  team2Id: number | null;
+  team1Score: number;
+  team2Score: number;
+  winnerTeamId: number | null;
+  nextMatchId: number | null;
+  slotInNext: number | null;
+  startsAt: Date | null;
+  completedAt: Date | null;
+  createdAt: Date;
+  team1: Team | null;
+  team2: Team | null;
+};
+
+type BracketData = {
+  bracketId: number;
+  rounds: Match[][];
+};
+
 async function fetchJSON<T>(url: string): Promise<T> {
   const r = await fetch(url);
   if (!r.ok) throw new Error('Failed to load bracket');
   return r.json();
 }
 
-export default function CornHoleBracket({ eventId, isAdmin, isLocked }: { eventId: string; isAdmin?: boolean; isLocked?: boolean }) {
-  const [data, setData] = useState<any>(null);
-  const [drag, setDrag] = useState<{ matchId: string; slot: 1 | 2 } | null>(null);
-  const [loading, setLoading] = useState(false);
+export default function CornHoleBracket({ eventId, isAdmin }: { eventId: string; isAdmin?: boolean; isLocked?: boolean }) {
+  const [data, setData] = useState<BracketData | null>(null);
+  const [drag, setDrag] = useState<{ matchId: number; slot: 1 | 2 } | null>(null);
   const { toast } = useToast();
 
   const reload = async () => {
-    setLoading(true);
     try {
-      const res = await fetchJSON(`/api/brackets?game=cornhole&eventId=${eventId}`);
+      const res = await fetchJSON<BracketData>(`/api/brackets?game=cornhole&eventId=${eventId}`);
       setData(res);
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      console.error('Failed to load bracket:', error);
+      toast({ title: 'Error', description: 'Failed to load bracket data', variant: 'destructive' });
     }
   };
 
@@ -49,9 +77,9 @@ export default function CornHoleBracket({ eventId, isAdmin, isLocked }: { eventI
 
   if (!data) return <div className="text-sm opacity-70">Loading…</div>;
 
-  const rounds: any[][] = data.rounds ?? [];
+  const rounds: Match[][] = data.rounds ?? [];
 
-  const handleDrop = async (targetMatchId: string, targetSlot: 1 | 2) => {
+  const handleDrop = async (targetMatchId: number, targetSlot: 1 | 2) => {
     if (!isAdmin) return; // admin-only
     if (!drag) return;
     try {
@@ -79,7 +107,7 @@ export default function CornHoleBracket({ eventId, isAdmin, isLocked }: { eventI
       >
         {rounds.map((matches, rIdx) => (
           <div key={rIdx} className="space-y-4">
-            {matches.map((m: any) => (
+            {matches.map((m: Match) => (
               <Card key={m.id} className="p-3 bg-white/60 backdrop-blur rounded-2xl shadow">
                 <div className="text-xs uppercase tracking-wide opacity-70 mb-2">Round {m.roundNumber}</div>
 
@@ -103,7 +131,7 @@ export default function CornHoleBracket({ eventId, isAdmin, isLocked }: { eventI
                   {isAdmin ? (
                     <div className="flex items-center gap-2">
                       <ScoreBox
-                        matchId={m.id}
+                        matchId={m.id.toString()}
                         s1={m.team1Score}
                         s2={m.team2Score}
                         onSubmit={async (a, b) => {

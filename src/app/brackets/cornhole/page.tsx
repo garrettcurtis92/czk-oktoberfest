@@ -1,5 +1,6 @@
 // src/app/brackets/cornhole/page.tsx
 import { Suspense } from 'react';
+import Link from 'next/link';
 import CornHoleBracket from './ui/CornHoleBracket';
 import { db } from '@/db';
 import { brackets, events } from '@/db/schema'; // <- use table directly
@@ -22,7 +23,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ e
           <div className="p-4 bg-yellow-50 rounded-lg">
             <p className="text-sm">
               <strong>Missing eventId parameter.</strong><br/>
-              Please access this page from the brackets overview at <a href="/brackets" className="text-blue-600 underline">/brackets</a>
+              Please access this page from the brackets overview at <Link href="/brackets" className="text-blue-600 underline">/brackets</Link>
             </p>
           </div>
         </div>
@@ -39,7 +40,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ e
           <h1 className="text-2xl font-display mb-4">Cornhole Bracket</h1>
           <div className="p-4 bg-red-50 rounded-lg">
             <p className="text-sm">
-              <strong>Invalid eventId:</strong> "{eventIdStr}"<br/>
+              <strong>Invalid eventId:</strong> &quot;{eventIdStr}&quot;<br/>
               eventId must be a number.
             </p>
           </div>
@@ -66,7 +67,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ e
             <div className="p-4 bg-red-50 rounded-lg">
               <p className="text-sm">
                 <strong>Event not found:</strong> No event with ID {eventId}<br/>
-                Check the <a href="/brackets" className="text-blue-600 underline">brackets overview</a> for available events.
+                Check the <Link href="/brackets" className="text-blue-600 underline">brackets overview</Link> for available events.
               </p>
             </div>
           </div>

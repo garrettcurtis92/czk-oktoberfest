@@ -1,10 +1,7 @@
 // src/app/brackets/page.tsx
-import Link from 'next/link';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { db } from '@/db';
 import { events } from '@/db/schema';
 import { eq, sql } from 'drizzle-orm';
-import { brackets } from '@/db/schema';
 import LiveTicker from '@/components/LiveTicker';
 
 export default async function BracketsPage() {
@@ -145,7 +142,7 @@ export default async function BracketsPage() {
             ) : (
               allEvents.map(event => (
                 <div key={event.id} className="p-2 bg-gray-50 rounded text-xs">
-                  ID: {event.id} | Title: "{event.title}" | Type: {event.type} | Day: {event.day}
+                  ID: {event.id} | Title: &quot;{event.title}&quot; | Type: {event.type} | Day: {event.day}
                 </div>
               ))
             )}
