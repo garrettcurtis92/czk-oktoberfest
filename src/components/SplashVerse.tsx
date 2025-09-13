@@ -43,7 +43,7 @@ export default function SplashVerse({
       aria-label="Weekend theme verse"
       className={[
         "fixed inset-0 z-[100] grid place-items-center",
-        "bg-gradient-to-br from-amber-50 via-white to-emerald-50",
+        "bg-gradient-to-br from-amber-50 via-white to-emerald-50 dark:from-amber-900/20 dark:via-gray-900 dark:to-emerald-900/20",
         "transition-opacity duration-500",
         visible ? "opacity-100" : "opacity-0",
       ].join(" ")}
@@ -65,15 +65,15 @@ export default function SplashVerse({
           "border border-white/20 dark:border-gray-700/30",
         ].join(" ")}
       >
-        <p className="text-xl md:text-2xl font-display italic leading-relaxed text-charcoal">
-          “May the God of hope fill you with all joy and peace in believing,
-          so that by the power of the Holy Spirit you may abound in hope.”
+        <p className="text-xl md:text-2xl font-display italic leading-relaxed text-charcoal dark:text-white">
+          &ldquo;May the God of hope fill you with all joy and peace in believing,
+          so that by the power of the Holy Spirit you may abound in hope.&rdquo;
         </p>
-        <div className="mt-3 text-sm md:text-base font-semibold text-charcoal/70">
+        <div className="mt-3 text-sm md:text-base font-semibold text-charcoal/70 dark:text-white/70">
           — Romans 15:13
         </div>
 
-        <div className="mt-6 text-xs text-charcoal/60">
+        <div className="mt-6 text-xs text-charcoal/60 dark:text-white/60">
           tap to continue
         </div>
       </div>

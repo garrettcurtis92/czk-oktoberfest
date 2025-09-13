@@ -260,9 +260,21 @@ useEffect(() => {
       <div className="sticky top-0 z-10 -mx-4 px-4 py-2 bg-sand/80 dark:bg-transparent backdrop-blur">
         <div className="glass p-3 rounded-3xl">
           <Tabs value={activeDay} onValueChange={setActiveDay} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 md:grid-cols-5 lg:grid-cols-7">
+            <TabsList className="grid w-full grid-cols-3 md:grid-cols-5 lg:grid-cols-7 bg-white/20 dark:bg-gray-800/20 backdrop-blur-md border border-white/30 dark:border-gray-700/30 rounded-2xl p-1 shadow-lg">
               {dayEntries.map(([day]) => (
-                <TabsTrigger key={day} value={day} className="text-xs md:text-sm" data-value={day}>
+                <TabsTrigger
+                  key={day}
+                  value={day}
+                  className="text-xs md:text-sm font-semibold px-3 py-2 rounded-xl transition-all duration-200
+                    data-[state=active]:bg-gradient-to-br data-[state=active]:from-team-blue data-[state=active]:to-blue-600
+                    data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:scale-105
+                    data-[state=inactive]:bg-white/10 data-[state=inactive]:dark:bg-gray-700/20
+                    data-[state=inactive]:text-charcoal/80 data-[state=inactive]:dark:text-white/80
+                    data-[state=inactive]:hover:bg-white/20 data-[state=inactive]:dark:hover:bg-gray-600/30
+                    data-[state=inactive]:hover:text-charcoal data-[state=inactive]:dark:hover:text-white
+                    data-[state=inactive]:hover:shadow-sm"
+                  data-value={day}
+                >
                   {fmtDayLabel(day)}
                 </TabsTrigger>
               ))}

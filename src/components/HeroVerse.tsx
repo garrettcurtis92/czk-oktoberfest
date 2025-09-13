@@ -1,10 +1,11 @@
-"use client";
-
-import { motion } from "framer-motion";
+"use client";        <p className="text-2xl md:text-3xl font-display leading-snug text-charcoal dark:text-white italic">
+          "May the God of hope fill you with all joy and peace in believing,
+          so that by the power of the Holy Spirit you may abound in hope."
+        </p>port { motion } from "framer-motion";
 
 export function HeroVerse() {
   return (
-    <section className="rounded-3xl p-8 shadow bg-gradient-to-br from-white/80 via-white/60 to-white/30 backdrop-blur relative overflow-hidden">
+    <section className="rounded-3xl p-8 shadow bg-gradient-to-br from-white/80 via-white/60 to-white/30 dark:from-gray-900/80 dark:via-gray-800/60 dark:to-gray-700/30 backdrop-blur relative overflow-hidden border border-white/20 dark:border-gray-700/30">
       <motion.blockquote
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
