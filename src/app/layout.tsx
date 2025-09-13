@@ -6,6 +6,7 @@ import SplashVerse from "@/components/SplashVerse";
 import ConfettiBurst from "@/components/ConfettiBurst";
 import { ThemeContextProvider } from "@/components/ThemeProvider";
 import { Toaster } from "sonner";
+import AddToHomeScreenPrompt from "@/components/AddToHomeScreenPrompt";
 
 export const metadata: Metadata = {
   title: "CZK Oktoberfest",
@@ -62,6 +63,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <PageTransition>{children}</PageTransition>
             </main>
             <BottomTabs />
+            <AddToHomeScreenPrompt />
             <Toaster />
           </div>
         </ThemeContextProvider>

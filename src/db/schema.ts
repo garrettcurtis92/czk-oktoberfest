@@ -1,4 +1,5 @@
-import { pgTable, serial, varchar, integer, timestamp, pgEnum, boolean, smallint } from "drizzle-orm/pg-core";
+import { pgTable, serial, varchar, integer, timestamp, pgEnum, boolean, smallint, text } from "drizzle-orm/pg-core";
+
 
 export const colorEnum = pgEnum("team_color", ["red","orange","yellow","green","blue","purple"]);
 export const eventType = pgEnum("event_type", ["game","dinner","social"]);
@@ -74,4 +75,11 @@ export const bracketMatches = pgTable("bracket_matches", {
   startsAt: timestamp("starts_at"),
   completedAt: timestamp("completed_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+export const subscriptions = pgTable("subscriptions", {
+  id: serial("id").primaryKey(),
+  endpoint: text("endpoint").notNull().unique(),
+  p256dh: text("p256dh").notNull(),
+  auth: text("auth").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });

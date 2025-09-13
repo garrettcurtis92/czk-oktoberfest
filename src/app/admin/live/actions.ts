@@ -2,6 +2,7 @@
 
 import { db } from "@/db";
 import { events as eventsTable, eventStatus } from "@/db/schema";
+import { sendToAll } from "@/lib/push-server";
 import { eq, lt } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
@@ -32,6 +33,28 @@ export async function setStatusAction(formData: FormData) {
   await db.update(eventsTable).set({ status }).where(eq(eventsTable.id, id));
   revalidatePath("/admin/live");
   revalidatePath("/");
+  // Fetch for title/message
+  const [ev] = await db.select().from(eventsTable).where(eq(eventsTable.id, id));
+
+  if (status === "live") {
+    await sendToAll({
+      title: "Event is LIVE",
+      body: `${ev.title} just started.`,
+      url: `/schedule`,
+    });
+  } else if (status === "paused") {
+    await sendToAll({
+      title: "Event Paused",
+      body: `${ev.title} is temporarily paused.`,
+      url: `/schedule`,
+    });
+  } else if (status === "finished") {
+    await sendToAll({
+      title: "Event Finished",
+      body: `${ev.title} has finished. Check results!`,
+      url: `/leaderboard`,
+    });
+  }
 }
 
 export async function clearLiveAction(formData: FormData) {
