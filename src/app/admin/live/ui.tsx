@@ -191,17 +191,20 @@ export default function AdminLiveClient({ rows }: { rows: Row[] }) {
                         <form action={setStatusAction}>
                           <input type="hidden" name="id" value={e.id} />
                           <input type="hidden" name="status" value="live" />
-                          <Button type="submit" className="rounded-xl">Go Live</Button>
+                          <Button
+                            type="submit"
+                            className="px-2 py-0.5 text-xs font-semibold rounded-full bg-team-blue text-white hover:opacity-95 shadow-sm"
+                          >
+                            Go Live
+                          </Button>
                         </form>
                       ) : (
-                        <Link
-                          href="#"
-                          className="rounded-xl px-3 py-2 text-sm border border-black/10 bg-white/70 hover:bg-white/80 transition"
-                          onClick={(ev) => ev.preventDefault()}
+                        <span
+                          className="inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold bg-team-red text-white shadow-sm"
                           aria-disabled
                         >
                           Live
-                        </Link>
+                        </span>
                       )}
 
                       <RowMenu id={e.id} />

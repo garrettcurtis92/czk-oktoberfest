@@ -1,14 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { CalendarDays, Trophy, Flag, User, MoreHorizontal } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { HamburgerMenu } from "@/components/HamburgerMenu";
-import LiveTicker from "@/components/LiveTicker";
+import TickerBadge from "@/components/TickerBadge";
 
 type TabItem = {
   href: string;
@@ -56,16 +55,81 @@ function TabLink({
   );
 }
 
+/**
+ * LiveTickerWrapper:
+ * - turns red + "LIVE NOW • {title}" when an event is live
+ * - links to the specific event card: /schedule#event-{id}
+ * - when no live event, shows your existing <LiveTicker/> and links to next scheduled event if present
+ */
+/**
+ * LiveTickerWrapper:
+ * - uses unified glassy TickerBadge for both states
+ * - LIVE: red, "LIVE NOW • {title}", deep-link to /schedule#event-{id}
+ * - NEXT: blue, "Next up • {title}" (or "Schedule"), deep-link to next
+ */
+function LiveTickerWrapper() {
+  const [live, setLive] = useState<null | { id: number; title: string }>(null);
+  const [next, setNext] = useState<null | { id: number; title: string }>(null);
+
+  useEffect(() => {
+    let alive = true;
+
+    async function fetchTicker() {
+      try {
+        const res = await fetch("/api/events/ticker", { cache: "no-store" });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!alive) return;
+        setLive(data.live ?? null);
+        setNext(data.next ?? null);
+      } catch {
+        /* ignore */
+      }
+    }
+
+    fetchTicker();
+    const t = setInterval(fetchTicker, 10000); // poll every 10s
+    return () => {
+      alive = false;
+      clearInterval(t);
+    };
+  }, []);
+
+  const isLive = Boolean(live);
+  const targetId = (live?.id ?? next?.id) ?? null;
+  const href = targetId ? `/schedule#event-${targetId}` : "/schedule";
+
+  if (isLive && live) {
+    return (
+      <TickerBadge
+        href={href}
+        tone="live"
+  className="animate-[pulse_1.6s_ease-in-out_infinite]"
+  label={`LIVE NOW • ${live.title}`}
+      />
+    );
+  }
+
+const nextLabel = next ? `Next up • ${next.title}` : "Schedule";
+return (
+  <TickerBadge
+    href={href}
+    label={nextLabel}
+  />
+);
+}
+
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-20 glass">
       <div className="mx-auto max-w-3xl px-4 py-3 flex items-center justify-between">
         {/* Spacer for balance */}
         <div className="w-10" />
-        <div className="flex-1 flex items-center justify-center">
-          <LiveTicker compact />
-        </div>
+<div className="flex-1 flex items-center justify-center">
+  <LiveTickerWrapper />
+</div>
         {/* Hamburger Menu */}
+        
         <HamburgerMenu />
       </div>
     </header>
