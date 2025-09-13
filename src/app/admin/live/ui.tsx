@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -188,16 +187,16 @@ export default function AdminLiveClient({ rows }: { rows: Row[] }) {
                     {/* Actions */}
                     <div className="flex items-center gap-2">
                       {e.status !== "live" ? (
-                        <form action={setStatusAction}>
-                          <input type="hidden" name="id" value={e.id} />
-                          <input type="hidden" name="status" value="live" />
-                          <Button
-                            type="submit"
-                            className="px-2 py-0.5 text-xs font-semibold rounded-full bg-team-blue text-white hover:opacity-95 shadow-sm"
-                          >
-                            Go Live
-                          </Button>
-                        </form>
+                          <form action={setStatusAction}>
+                            <input type="hidden" name="id" value={e.id} />
+                            <input type="hidden" name="status" value="live" />
+                            <Button
+                              type="submit"
+                              className={"inline-flex items-center gap-2 rounded-3xl px-3 py-1 text-sm font-semibold glass text-white shadow-md hover:shadow-lg focus-visible:ring-2 focus-visible:ring-black/10 bg-gradient-to-r from-blue-500/95 via-blue-600/95 to-indigo-600/95"}
+                            >
+                              Go Live
+                            </Button>
+                          </form>
                       ) : (
                         <span
                           className="inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold bg-team-red text-white shadow-sm"

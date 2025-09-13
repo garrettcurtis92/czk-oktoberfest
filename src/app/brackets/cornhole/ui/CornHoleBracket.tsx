@@ -44,10 +44,7 @@ type Match = {
   team2: Team | null;
 };
 
-type BracketData = {
-  bracketId: number;
-  rounds: Match[][];
-};
+type BracketData = { bracketId: number; rounds: Match[][] };
 
 async function fetchJSON<T>(url: string): Promise<T> {
   const r = await fetch(url);
@@ -66,7 +63,7 @@ export default function CornHoleBracket({ eventId, isAdmin }: { eventId: string;
       setData(res);
     } catch (error) {
       console.error('Failed to load bracket:', error);
-      toast({ title: 'Error', description: 'Failed to load bracket data', variant: 'destructive' });
+      toast({ title: 'Failed to load bracket', description: 'See console for details', variant: 'destructive' });
     }
   };
 
@@ -80,21 +77,15 @@ export default function CornHoleBracket({ eventId, isAdmin }: { eventId: string;
   const rounds: Match[][] = data.rounds ?? [];
 
   const handleDrop = async (targetMatchId: number, targetSlot: 1 | 2) => {
-    if (!isAdmin) return; // admin-only
+    if (!isAdmin) return;
     if (!drag) return;
     try {
       await swapFirstRoundTeams(drag.matchId, drag.slot, targetMatchId, targetSlot);
       await reload();
-      toast({
-        title: "Teams swapped successfully",
-        description: "The bracket has been updated.",
-      });
+      toast({ title: 'Teams swapped successfully', description: 'The bracket has been updated.' });
     } catch (error) {
-      toast({
-        title: "Failed to swap teams",
-        description: "Please try again.",
-        variant: "destructive",
-      });
+      console.error('Failed to swap teams', error);
+      toast({ title: 'Failed to swap teams', description: 'Please try again.', variant: 'destructive' });
     }
     setDrag(null);
   };
@@ -131,23 +122,16 @@ export default function CornHoleBracket({ eventId, isAdmin }: { eventId: string;
                   {isAdmin ? (
                     <div className="flex items-center gap-2">
                       <ScoreBox
-                        matchId={m.id.toString()}
                         s1={m.team1Score}
                         s2={m.team2Score}
                         onSubmit={async (a, b) => {
                           try {
                             await submitCornholeScore(m.id, a, b);
                             await reload();
-                            toast({
-                              title: "Score updated",
-                              description: `Match score set to ${a} - ${b}`,
-                            });
+                            toast({ title: 'Score updated', description: `Match score set to ${a} - ${b}` });
                           } catch (error) {
-                            toast({
-                              title: "Failed to update score",
-                              description: "Please try again.",
-                              variant: "destructive",
-                            });
+                            console.error('Failed to update score', error);
+                            toast({ title: 'Failed to update score', description: 'Please try again.', variant: 'destructive' });
                           }
                         }}
                       />
@@ -205,12 +189,10 @@ function Slot({
 }
 
 function ScoreBox({
-  matchId,
   s1,
   s2,
   onSubmit,
 }: {
-  matchId: string;
   s1: number;
   s2: number;
   onSubmit: (a: number, b: number) => Promise<void>;

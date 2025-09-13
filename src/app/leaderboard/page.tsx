@@ -5,7 +5,6 @@ export const revalidate = 0;
 import { db } from "@/db";
 import { Crown } from "lucide-react";
 import { sql } from "drizzle-orm";
-import LiveTicker from "@/components/LiveTicker";
 
 type TeamRow = {
   id: number;

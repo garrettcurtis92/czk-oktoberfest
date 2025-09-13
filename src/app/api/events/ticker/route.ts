@@ -10,7 +10,7 @@ export async function GET() {
   const liveRows = await db
     .select({ id: events.id, title: events.title, day: events.day })
     .from(events)
-    .where(eq(events.status as any, "live"))
+    .where(eq(events.status, "live" as const))
     .limit(1);
 
   // Next SCHEDULED event (sorted by day then startTime)
@@ -22,7 +22,7 @@ export async function GET() {
       startTime: events.startTime,
     })
     .from(events)
-    .where(eq(events.status as any, "scheduled"))
+    .where(eq(events.status, "scheduled" as const))
     .orderBy(asc(events.day), asc(events.startTime))
     .limit(1);
 

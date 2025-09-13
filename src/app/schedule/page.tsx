@@ -1,7 +1,7 @@
 // src/app/schedule/page.tsx
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Clock, MapPin, Trophy, Gamepad2, Utensils, PartyPopper } from "lucide-react";
@@ -68,18 +68,6 @@ function fmtDayLabel(iso: string) {
   const d = new Date(iso + "T12:00:00");
   return d.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" });
 }
-function dateRange(rows: EventRow[]) {
-  if (!rows.length) return "";
-  const days = [...new Set(rows.map((r) => r.day))].sort();
-  const first = new Date(days[0] + "T12:00:00");
-  const last = new Date(days[days.length - 1] + "T12:00:00");
-  const sameMonth = first.getMonth() === last.getMonth();
-  const month = first.toLocaleString([], { month: "short" });
-  const month2 = last.toLocaleString([], { month: "short" });
-  const d1 = first.getDate();
-  const d2 = last.getDate();
-  return sameMonth ? `${month} ${d1}–${d2}` : `${month} ${d1} – ${month2} ${d2}`;
-}
 
 // date helper
 function toDate(day: string, hm?: string | null) {
@@ -89,14 +77,6 @@ function toDate(day: string, hm?: string | null) {
     d.setHours(h ?? 0, m ?? 0, 0, 0);
   }
   return d;
-}
-
-// Format "starts in" countdown like "1h 12m" or "7m"
-function formatCountdown(ms: number) {
-  const s = Math.max(0, Math.floor(ms / 1000));
-  const h = Math.floor(s / 3600);
-  const m = Math.floor((s % 3600) / 60);
-  return h > 0 ? `${h}h ${m}m` : `${m}m`;
 }
 
 
@@ -213,21 +193,6 @@ const dayEntries = useMemo(() => {
   // find live event (first match)
   const live = useMemo(() => sorted.find((e) => e.status === "live") ?? null, [sorted]);
 
-  const upcoming = useMemo(() => {
-  const now = Date.now();
-  return (
-    sorted
-      .map((e) => ({ e, when: toDate(e.day, e.startTime ?? "23:59").getTime() }))
-      .filter((x) => x.when > now)
-      .sort((a, b) => a.when - b.when)[0]?.e ?? null
-  );
-}, [sorted]);
-const nextCountdown = useMemo(() => {
-  if (!upcoming) return "";
-  const when = toDate(upcoming.day, upcoming.startTime ?? "00:00").getTime();
-  return formatCountdown(when - Date.now());
-}, [upcoming]);
-
 
 const [shakeLiveId, setShakeLiveId] = useState<number | null>(null);
 const liveId = live?.id ?? null;
@@ -249,18 +214,6 @@ useEffect(() => {
       setActiveDay(live?.day ?? dayEntries[0][0]);
     }
   }, [live?.day, dayEntries]);
-
-  // jump to an event (switch tab, then smooth scroll)
-  const jumpTo = useCallback(
-    (day: string, id: number) => {
-      setActiveDay(day);
-      setTimeout(() => {
-        const el = document.getElementById(`event-${id}`);
-        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 60);
-    },
-    [setActiveDay]
-  );
 
   if (loading) {
     return (
@@ -432,7 +385,6 @@ function eventAccent(ev: UiEvent) {
 
 function EventCard({ ev }: { ev: UiEvent }) {
   const isLive = ev.status === "live";
-  const accent = eventAccent(ev);
 
   // Map game titles to specific bracket routes and include eventId
   let bracketHref: string | undefined;

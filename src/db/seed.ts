@@ -43,9 +43,6 @@ function buildFirstRoundPairs(seeds: Seed[]) {
   return { pairs, size };
 }
 
-// Cornhole scoring helper (for completeness if you want to simulate scores later)
-function normalizeCornholeScore(s: number) { return s > 21 ? 11 : s; }
-
 // 3) Import DB after envs are set and run within an async IIFE
 (async () => {
   const { db } = await import("./index");

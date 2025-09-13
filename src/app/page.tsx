@@ -31,17 +31,6 @@ const CAPTAINS: Record<
   purple: { name: "Lexie Curtis",         slug: "lexie-curtis",         img: "/captains/lexie-curtis.jpg" },
 };
 
-/** Small helper to render a team color chip using your CSS variables */
-function TeamDot({ color }: { color: TeamRow["color"] }) {
-  return (
-    <span
-      className="inline-block size-3 rounded-full"
-      style={{ background: `var(--tw-color-team-${color})` }}
-      aria-hidden
-    />
-  );
-}
-
 export default async function Home() {
   // Pull all teams (alphabetical by name for now)
   const { rows } = await db.execute(sql`

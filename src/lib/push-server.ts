@@ -18,7 +18,6 @@ if (vapidSubject && vapidPublic && vapidPrivate) {
 } else {
   // Optionally log in dev only
   if (process.env.NODE_ENV !== "production") {
-    // eslint-disable-next-line no-console
     console.warn("VAPID keys not set; push notifications disabled.");
   }
 }

@@ -33,7 +33,7 @@ export default function SplashVerse({
     }, displayMs - fadeMs);
 
     return () => clearTimeout(t);
-  }, []);
+  }, [displayMs, fadeMs]);
 
   if (hidden) return null;
 

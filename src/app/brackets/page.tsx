@@ -2,7 +2,6 @@
 import { db } from '@/db';
 import { events } from '@/db/schema';
 import { eq, sql } from 'drizzle-orm';
-import LiveTicker from '@/components/LiveTicker';
 
 export default async function BracketsPage() {
   // Get all events to see what's available
@@ -26,7 +25,7 @@ export default async function BracketsPage() {
       eventId = specificEvent[0].id;
       console.log('Found cornhole event ID 51:', specificEvent[0]);
     }
-  } catch (error) {
+  } catch {
     console.log('Event ID 51 not found, trying other methods');
   }
 
