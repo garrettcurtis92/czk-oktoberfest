@@ -1,4 +1,5 @@
 // Load env from .env.local so CLI sees DATABASE_URL
+/* eslint-disable @typescript-eslint/no-require-imports */
 require('dotenv').config({ path: '.env.local' });
 
 /** @type {import('drizzle-kit').Config} */

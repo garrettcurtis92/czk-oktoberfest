@@ -100,7 +100,7 @@ export default function CornHoleBracket({ eventId, isAdmin }: { eventId: string;
           <div key={rIdx} className="space-y-4">
             {matches.map((m: Match) => (
               <Card key={m.id} className="p-3 bg-gradient-to-br from-white/20 via-white/10 to-white/5 dark:from-gray-900/20 dark:via-gray-800/10 dark:to-gray-700/5 backdrop-blur-md rounded-2xl shadow border border-white/20 dark:border-gray-700/30">
-                <div className="text-xs uppercase tracking-wide opacity-70 mb-2">Round {m.roundNumber}</div>
+                <div className="text-xs uppercase tracking-wide opacity-70 mb-2 text-charcoal dark:text-white/70">Round {m.roundNumber}</div>
 
                 <Slot
                   label="Team 1"
@@ -137,7 +137,7 @@ export default function CornHoleBracket({ eventId, isAdmin }: { eventId: string;
                       />
                     </div>
                   ) : (
-                    <div className="text-sm opacity-80">Score: {m.team1Score} – {m.team2Score}</div>
+                    <div className="text-sm opacity-80 text-charcoal dark:text-white/80">Score: {m.team1Score} – {m.team2Score}</div>
                   )}
                 </div>
               </Card>
@@ -165,7 +165,7 @@ function Slot({
   return (
     <motion.div
       layout
-      className={`rounded-xl border p-2 mb-2 ${draggable ? 'bg-white/70' : 'bg-white/60 opacity-80'}`}
+      className={`rounded-xl border p-2 mb-2 ${draggable ? 'bg-white/70 dark:bg-gray-700/70' : 'bg-white/60 dark:bg-gray-800/60 opacity-80'}`}
       draggable={draggable}
       onDragStart={(e) => {
         if (!draggable) return;
@@ -182,8 +182,8 @@ function Slot({
         onDrop?.();
       }}
     >
-      <div className="text-[10px] opacity-60">{label}</div>
-      <div className="font-medium">{teamName}</div>
+      <div className="text-[10px] opacity-60 text-charcoal dark:text-white/70">{label}</div>
+      <div className="font-medium text-charcoal dark:text-white">{teamName}</div>
     </motion.div>
   );
 }
@@ -204,16 +204,16 @@ function ScoreBox({
     <div className="flex items-center gap-2">
       <input
         type="number"
-        className="w-14 rounded-lg border px-2 py-1"
+        className="w-14 rounded-lg border border-gray-300 dark:border-gray-600 px-2 py-1 bg-white dark:bg-gray-800 text-charcoal dark:text-white"
         value={a}
         onChange={(e) => setA(parseInt(e.target.value || '0'))}
         min={0}
         disabled={false}
       />
-      <span>–</span>
+      <span className="text-charcoal dark:text-white">–</span>
       <input
         type="number"
-        className="w-14 rounded-lg border px-2 py-1"
+        className="w-14 rounded-lg border border-gray-300 dark:border-gray-600 px-2 py-1 bg-white dark:bg-gray-800 text-charcoal dark:text-white"
         value={b}
         onChange={(e) => setB(parseInt(e.target.value || '0'))}
         min={0}
