@@ -58,9 +58,7 @@ export default async function LeaderboardPage() {
   return (
     <main className="p-4 space-y-4">
       
-      {/* Live/Next Event Ticker */}
-      <LiveTicker />
-
+     
       {/* Hero / Header */}
       <section className="relative rounded-3xl p-8 shadow bg-gradient-to-br from-white/20 via-white/10 to-white/5 dark:from-gray-900/20 dark:via-gray-800/10 dark:to-gray-700/5 backdrop-blur-md overflow-hidden border border-white/20 dark:border-gray-700/30">
         {/* subtle blobs */}

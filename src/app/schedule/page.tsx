@@ -7,7 +7,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Clock, MapPin, Trophy, Gamepad2, Utensils, PartyPopper } from "lucide-react";
 import { motion } from "framer-motion";
 import GlassCard from "@/components/GlassCard";
-import LiveTicker from "@/components/LiveTicker";
+
 
 
 
@@ -287,7 +287,7 @@ useEffect(() => {
     <main className="p-4 space-y-4">
       <CoinStyles />
 
-      <LiveTicker />
+      
 
       {/* Hero */}
       <section className="relative glass p-8 rounded-3xl overflow-hidden">

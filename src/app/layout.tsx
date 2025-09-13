@@ -53,13 +53,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
   <body suppressHydrationWarning>
         <ThemeContextProvider>
-          <link rel="apple-touch-icon" href="/icons/icon-192.png" />
-
+          <link rel="CZK-logo" href="/CZK-logo.jpg" />
           <div className="bg-sand text-charcoal dark:bg-gray-900 dark:text-white transition-colors">
             <SplashVerse displayMs={6000} fadeMs={700} />
-            <ConfettiBurst />
+            <ConfettiBurst />            
             <SiteHeader />
             <main className="mx-auto max-w-3xl px-4 py-4">
+             
               <PageTransition>{children}</PageTransition>
             </main>
             <BottomTabs />

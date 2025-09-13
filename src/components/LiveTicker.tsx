@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface Event {
   id: number;
@@ -11,7 +12,7 @@ interface Event {
   status?: "live" | "upcoming";
 }
 
-export default function LiveTicker() {
+export default function LiveTicker({ compact }: { compact?: boolean } = {}) {
   const [currentEvent, setCurrentEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -55,10 +56,13 @@ export default function LiveTicker() {
 
   if (loading) {
     return (
-      <div className="flex justify-center mb-6">
-        <span className="px-3 py-1.5 text-sm font-medium bg-team-blue text-white rounded-full shadow flex items-center gap-2">
+      <div className={compact ? "flex items-center" : "flex justify-center mb-6"}>
+        <span className={cn(
+          compact ? "px-2 py-1 text-xs" : "px-3 py-1.5 text-sm",
+          "font-medium bg-team-blue text-white rounded-full shadow flex items-center gap-2"
+        )}>
           <span className="inline-block size-2 rounded-full bg-white animate-pulse" />
-          Loading events...
+          {compact ? "Loading" : "Loading events..."}
         </span>
       </div>
     );
@@ -66,10 +70,13 @@ export default function LiveTicker() {
 
   if (!currentEvent) {
     return (
-      <div className="flex justify-center mb-6">
-        <span className="px-3 py-1.5 text-sm font-medium bg-team-blue text-white rounded-full shadow flex items-center gap-2">
+      <div className={compact ? "flex items-center" : "flex justify-center mb-6"}>
+        <span className={cn(
+          compact ? "px-2 py-1 text-xs" : "px-3 py-1.5 text-sm",
+          "font-medium bg-team-blue text-white rounded-full shadow flex items-center gap-2"
+        )}>
           <span className="inline-block size-2 rounded-full bg-white animate-pulse" />
-          Oktoberfest 2025 - October 3-5
+          {compact ? "Oktoberfest" : "Oktoberfest 2025 - October 3-5"}
         </span>
       </div>
     );
@@ -93,12 +100,15 @@ export default function LiveTicker() {
   };
 
   return (
-    <div className="flex justify-center mb-6">
+    <div className={compact ? "flex items-center" : "flex justify-center mb-6"}>
       {currentEvent.status === "live" ? (
-        <span className="px-3 py-1.5 text-sm font-medium bg-team-blue text-white rounded-full shadow flex items-center gap-2">
+        <span className={cn(
+          compact ? "px-2 py-1 text-xs" : "px-3 py-1.5 text-sm",
+          "font-medium bg-team-blue text-white rounded-full shadow flex items-center gap-2"
+        )}>
           <span className="inline-block size-2 rounded-full bg-white animate-pulse" />
-          <span className="font-semibold">Live:</span>
-          <span className="font-semibold truncate max-w-[50vw]">{currentEvent.title}</span>
+          <span className={compact ? "font-semibold text-xs" : "font-semibold"}>Live</span>
+          <span className={cn("font-semibold truncate", compact ? "max-w-[22ch]" : "max-w-[50vw]")}>{currentEvent.title}</span>
           {currentEvent.startTime && (
             <span className="text-xs opacity-90">
               · {currentEvent.startTime}
@@ -107,10 +117,13 @@ export default function LiveTicker() {
           )}
         </span>
       ) : (
-        <span className="px-3 py-1.5 text-sm font-medium bg-team-blue text-white rounded-full shadow flex items-center gap-2">
+        <span className={cn(
+          compact ? "px-2 py-1 text-xs" : "px-3 py-1.5 text-sm",
+          "font-medium bg-team-blue text-white rounded-full shadow flex items-center gap-2"
+        )}>
           <span className="inline-block size-2 rounded-full bg-white animate-pulse" />
-          <span className="font-medium">Next Up:</span>
-          <span className="font-semibold truncate max-w-[50vw]">{currentEvent.title}</span>
+          <span className={compact ? "text-xs" : "font-medium"}>Next</span>
+          <span className={cn("font-semibold truncate", compact ? "max-w-[22ch]" : "max-w-[50vw]")}>{currentEvent.title}</span>
           {currentEvent.startTime && (
             <span className="text-xs opacity-90">· {formatDate(currentEvent.day)} {formatTime(`${currentEvent.day}T${currentEvent.startTime}`)}</span>
           )}

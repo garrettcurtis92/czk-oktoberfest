@@ -8,6 +8,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { HamburgerMenu } from "@/components/HamburgerMenu";
+import LiveTicker from "@/components/LiveTicker";
 
 type TabItem = {
   href: string;
@@ -61,19 +62,9 @@ export function SiteHeader() {
       <div className="mx-auto max-w-3xl px-4 py-3 flex items-center justify-between">
         {/* Spacer for balance */}
         <div className="w-10" />
-        
-        {/* Logo */}
-        <Link href="/" className="block">
-          <Image
-            src="/logo.svg"
-            alt="Oktoberfest logo"
-            width={48}
-            height={48}
-            className="rounded-xl shadow"
-            priority
-          />
-        </Link>
-        
+        <div className="flex-1 flex items-center justify-center">
+          <LiveTicker compact />
+        </div>
         {/* Hamburger Menu */}
         <HamburgerMenu />
       </div>

@@ -146,12 +146,7 @@ export function HamburgerMenu() {
 
             <div className="my-6 h-px bg-black/10 dark:bg-white/10" />
 
-            {/* Extra items */}
-            <div className="space-y-2">
-              <button className="w-full flex items-center gap-3 p-3 rounded-xl bg-black/[0.03] dark:bg-white/[0.10] hover:bg-black/[0.06] dark:hover:bg-white/[0.14] transition-colors">
-                <span className="text-sm text-charcoal dark:text-white">About Oktoberfest</span>
-              </button>
-            </div>
+           
           </motion.aside>
         )}
       </AnimatePresence>
