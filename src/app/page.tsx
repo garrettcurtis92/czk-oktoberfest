@@ -9,6 +9,7 @@ import Image from "next/image";
 import CaptainCard from "@/components/CaptainsCard";
 import ColorChips from "@/components/ColorChips";
 import LiveTicker from "@/components/LiveTicker";
+import GlassCard from "@/components/GlassCard";
 
 
 
@@ -58,16 +59,14 @@ export default async function Home() {
       {/* Live/Next Event Ticker */}
       <LiveTicker />
 
-{/* Team Captains hero */}
-<section className="relative rounded-3xl p-8 shadow bg-gradient-to-br from-white/80 via-white/60 to-white/30 backdrop-blur overflow-hidden">
+      {/* Team Captains hero */}
+<section className="relative rounded-3xl p-8 shadow bg-gradient-to-br from-white/20 via-white/10 to-white/5 dark:from-gray-900/20 dark:via-gray-800/10 dark:to-gray-700/5 backdrop-blur-md overflow-hidden border border-white/20 dark:border-gray-700/30">
   {/* subtle blobs */}
   <div className="absolute -top-20 -right-16 h-48 w-48 rounded-full bg-amber-300/20 blur-3xl" />
-  <div className="absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-emerald-300/20 blur-3xl" />
-
-  <h1 className="text-3xl md:text-4xl font-display tracking-tight text-center">
+  <div className="absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-emerald-300/20 blur-3xl" />  <h1 className="text-3xl md:text-4xl font-display tracking-tight text-center">
     Team Captains!
   </h1>
-  <p className="mt-2 text-center text-sm md:text-base text-charcoal/70">
+  <p className="mt-2 text-center text-sm md:text-base text-charcoal/70 dark:text-white/70">
     Meet the leaders, rally your squad, and get ready to compete.
   </p>
 
@@ -99,12 +98,12 @@ export default async function Home() {
 
 
       {/* Teams (glassy cards like Schedule) */}
-      <section className="rounded-2xl p-4 bg-white/70 backdrop-blur shadow">
+      <section className="rounded-2xl p-4 bg-gradient-to-br from-white/20 via-white/10 to-white/5 dark:from-gray-900/20 dark:via-gray-800/10 dark:to-gray-700/5 backdrop-blur-md shadow border border-white/20 dark:border-gray-700/30">
         <div className="mb-3 flex items-baseline justify-between">
         </div>
 
         {teams.length === 0 ? (
-          <div className="rounded-xl border border-black/10 bg-white/70 p-4 text-sm opacity-80">
+          <div className="card-surface p-4 relative overflow-hidden">
             No teams found yet. Seed or add teams to see them here.
           </div>
         ) : (
@@ -127,36 +126,12 @@ function TeamCard({ team }: { team: TeamRow }) {
   const teamVar = `var(--tw-color-team-${team.color})`;
 
   return (
-    <div
-      className={[
-        "relative overflow-hidden rounded-3xl p-5",
-        // glassy gradient + blur (matches hero)
-        "bg-gradient-to-br from-white/80 via-white/60 to-white/30 backdrop-blur",
-        // soft border + elevation
-        "border border-white/60 shadow-[0_10px_30px_rgba(0,0,0,0.08)]",
-        // hover/focus polish
-        "transition hover:shadow-[0_14px_40px_rgba(0,0,0,0.12)] focus-within:ring-2 focus-within:ring-black/10",
-      ].join(" ")}
-    >
-      {/* decorative blobs tinted to team color (kept separate from content) */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div
-          className="absolute -top-16 -right-14 h-40 w-40 rounded-full blur-3xl"
-          style={{ background: `color-mix(in oklab, ${teamVar} 25%, transparent)` }}
-          aria-hidden
-        />
-        <div
-          className="absolute -bottom-16 -left-14 h-40 w-40 rounded-full blur-3xl"
-          style={{ background: `color-mix(in oklab, ${teamVar} 15%, transparent)` }}
-          aria-hidden
-        />
-      </div>
-
+    <GlassCard accent={teamVar}>
       {/* content layer */}
-      <div className="relative z-10 flex items-start gap-4">
+      <div className="flex items-start gap-4">
         {/* avatar frame (glassy) */}
         <div
-          className="relative grid place-items-center h-16 w-16 shrink-0 rounded-2xl overflow-hidden border border-white/70 bg-white/70 backdrop-blur"
+          className="relative grid place-items-center h-16 w-16 shrink-0 rounded-2xl overflow-hidden border border-white/20 dark:border-gray-700/30 bg-gradient-to-br from-white/20 via-white/10 to-white/5 dark:from-gray-900/20 dark:via-gray-800/10 dark:to-gray-700/5 backdrop-blur-md"
           style={{ boxShadow: "inset 0 1px 0 rgba(255,255,255,0.6)" }}
         >
           <Image
@@ -194,6 +169,6 @@ function TeamCard({ team }: { team: TeamRow }) {
           </div>
         </div>
       </div>
-    </div>
+    </GlassCard>
   );
 }

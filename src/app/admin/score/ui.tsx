@@ -52,7 +52,7 @@ export default function AdminScoreClient({
           <label className="text-sm opacity-70">Event</label>
           <input type="hidden" name="eventId" value={eventId} />
           <Select value={eventId} onValueChange={setEventId}>
-            <SelectTrigger className="mt-1 w-full max-w-full sm:max-w-[320px] rounded-xl border border-white/60 bg-white/80 backdrop-blur px-3 py-2 shadow-sm overflow-hidden">
+            <SelectTrigger className="mt-1 w-full max-w-full sm:max-w-[320px] rounded-xl border border-white/20 dark:border-gray-700/30 bg-gradient-to-br from-white/20 via-white/10 to-white/5 dark:from-gray-900/20 dark:via-gray-800/10 dark:to-gray-700/5 backdrop-blur-md px-3 py-2 shadow-sm overflow-hidden">
               <span className="block w-full overflow-hidden whitespace-nowrap truncate">
                 <SelectValue placeholder="Select event" />
               </span>
@@ -72,7 +72,7 @@ export default function AdminScoreClient({
           <label className="text-sm opacity-70">Team</label>
           <input type="hidden" name="teamId" value={teamId} />
           <Select value={teamId} onValueChange={setTeamId}>
-            <SelectTrigger className="mt-1 w-full sm:max-w-[240px] rounded-xl border border-white/60 bg-white/80 backdrop-blur px-3 py-2 shadow-sm">
+            <SelectTrigger className="mt-1 w-full sm:max-w-[240px] rounded-xl border border-white/20 dark:border-gray-700/30 bg-gradient-to-br from-white/20 via-white/10 to-white/5 dark:from-gray-900/20 dark:via-gray-800/10 dark:to-gray-700/5 backdrop-blur-md px-3 py-2 shadow-sm">
               <SelectValue placeholder="Select team" />
             </SelectTrigger>
             <SelectContent className="rounded-xl bg-white text-gray-900 shadow-xl border border-gray-200">
@@ -98,7 +98,7 @@ export default function AdminScoreClient({
             name="points"
             type="number"
             inputMode="numeric"
-            className="mt-1 rounded-xl bg-white/80 backdrop-blur border-white/60"
+            className="mt-1 rounded-xl bg-gradient-to-br from-white/20 via-white/10 to-white/5 dark:from-gray-900/20 dark:via-gray-800/10 dark:to-gray-700/5 backdrop-blur-md border-white/20 dark:border-gray-700/30"
             value={points}
             onChange={(e) => setPoints(e.target.value)}
             min={-1000}
@@ -112,7 +112,7 @@ export default function AdminScoreClient({
           <label className="text-sm opacity-70">Note (optional)</label>
           <Textarea
             name="note"
-            className="mt-1 rounded-xl bg-white/80 backdrop-blur border-white/60"
+            className="mt-1 rounded-xl bg-gradient-to-br from-white/20 via-white/10 to-white/5 dark:from-gray-900/20 dark:via-gray-800/10 dark:to-gray-700/5 backdrop-blur-md border-white/20 dark:border-gray-700/30"
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="e.g., Cornhole finals"

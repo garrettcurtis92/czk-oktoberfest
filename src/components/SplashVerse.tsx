@@ -60,9 +60,9 @@ export default function SplashVerse({
         className={[
           "max-w-2xl mx-6 text-center",
           "rounded-3xl p-8",
-          "bg-white/70 backdrop-blur-xl",
-          "shadow-[0_10px_30px_rgba(0,0,0,0.08)]",
-          "border border-white/60",
+          "bg-gradient-to-br from-white/20 via-white/10 to-white/5 dark:from-gray-900/20 dark:via-gray-800/10 dark:to-gray-700/5 backdrop-blur-md",
+          "shadow-[0_10px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.3)]",
+          "border border-white/20 dark:border-gray-700/30",
         ].join(" ")}
       >
         <p className="text-xl md:text-2xl font-display italic leading-relaxed text-charcoal">

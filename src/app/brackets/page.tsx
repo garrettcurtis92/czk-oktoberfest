@@ -72,7 +72,7 @@ export default async function BracketsPage() {
       <LiveTicker />
 
       {/* Hero */}
-      <section className="relative rounded-3xl p-8 shadow bg-gradient-to-br from-white/80 via-white/60 to-white/30 backdrop-blur overflow-hidden">
+      <section className="relative rounded-3xl p-8 shadow bg-gradient-to-br from-white/20 via-white/10 to-white/5 dark:from-gray-900/20 dark:via-gray-800/10 dark:to-gray-700/5 backdrop-blur-md overflow-hidden border border-white/20 dark:border-gray-700/30">
         {/* subtle blobs */}
         <div className="absolute -top-20 -right-16 h-48 w-48 rounded-full bg-amber-300/20 blur-3xl" />
         <div className="absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-emerald-300/20 blur-3xl" />
@@ -80,12 +80,12 @@ export default async function BracketsPage() {
         <h1 className="text-3xl md:text-4xl font-display tracking-tight text-center">
           Brackets
         </h1>
-        <p className="mt-2 text-center text-sm md:text-base text-charcoal/70">
+        <p className="mt-2 text-center text-sm md:text-base text-charcoal/70 dark:text-white/70">
           View and manage tournament brackets for different games.
         </p>
       </section>
 
-      <div className="rounded-2xl p-6 bg-white/70 backdrop-blur shadow">
+      <div className="rounded-2xl p-6 bg-gradient-to-br from-white/20 via-white/10 to-white/5 dark:from-gray-900/20 dark:via-gray-800/10 dark:to-gray-700/5 backdrop-blur-md shadow border border-white/20 dark:border-gray-700/30">
         {/* Debug info */}
         <div className="mb-4 p-3 bg-yellow-50 rounded-lg text-sm">
           <strong>Debug Info:</strong><br/>

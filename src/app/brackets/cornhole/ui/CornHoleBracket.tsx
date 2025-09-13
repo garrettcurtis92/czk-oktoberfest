@@ -108,7 +108,7 @@ export default function CornHoleBracket({ eventId, isAdmin }: { eventId: string;
         {rounds.map((matches, rIdx) => (
           <div key={rIdx} className="space-y-4">
             {matches.map((m: Match) => (
-              <Card key={m.id} className="p-3 bg-white/60 backdrop-blur rounded-2xl shadow">
+              <Card key={m.id} className="p-3 bg-gradient-to-br from-white/20 via-white/10 to-white/5 dark:from-gray-900/20 dark:via-gray-800/10 dark:to-gray-700/5 backdrop-blur-md rounded-2xl shadow border border-white/20 dark:border-gray-700/30">
                 <div className="text-xs uppercase tracking-wide opacity-70 mb-2">Round {m.roundNumber}</div>
 
                 <Slot

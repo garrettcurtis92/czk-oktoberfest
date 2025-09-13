@@ -51,10 +51,10 @@ function cn(...classes: Array<string | false | null | undefined>) {
 }
 
 const statusPill: Record<NonNullable<EventRow["status"]> | "scheduled", string> = {
-  scheduled: "bg-white/60",
+  scheduled: "pill",
   live: "bg-team-red text-white",
-  paused: "bg-yellow-300",
-  finished: "bg-charcoal text-white",
+  paused: "bg-yellow-300 dark:bg-yellow-400 text-black",
+  finished: "bg-charcoal text-white dark:bg-white/20 dark:text-white",
 };
 
 function fmtTime(s?: string | null) {
@@ -265,7 +265,7 @@ useEffect(() => {
   if (loading) {
     return (
       <main className="p-6">
-        <div className="rounded-2xl p-8 text-center bg-white/70 backdrop-blur shadow">
+        <div className="glass p-8 text-center">
           <h2 className="text-xl font-display mb-1">Romans 15:13</h2>
         </div>
       </main>
@@ -275,7 +275,7 @@ useEffect(() => {
   if (dayEntries.length === 0) {
     return (
       <main className="p-6">
-        <div className="rounded-2xl p-8 text-center bg-white/70 backdrop-blur shadow">
+        <div className="glass p-8 text-center">
           <h2 className="text-xl font-display mb-1">No events yet</h2>
           <p className="opacity-70 text-sm">Admins can add events from the secret dashboard.</p>
         </div>
@@ -290,23 +290,22 @@ useEffect(() => {
       <LiveTicker />
 
       {/* Hero */}
-      <section className="relative rounded-3xl p-8 shadow bg-gradient-to-br from-white/80 via-white/60 to-white/30 backdrop-blur overflow-hidden">
+      <section className="relative glass p-8 rounded-3xl overflow-hidden">
         {/* subtle blobs */}
-        <div className="absolute -top-20 -right-16 h-48 w-48 rounded-full bg-amber-300/20 blur-3xl" />
-        <div className="absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-emerald-300/20 blur-3xl" />
+        <div className="absolute -top-20 -right-16 h-48 w-48 rounded-full bg-amber-300/20 dark:bg-amber-200/10 blur-3xl" />
+        <div className="absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-emerald-300/20 dark:bg-emerald-200/10 blur-3xl" />
 
         <h1 className="text-3xl md:text-4xl font-display tracking-tight text-center">
           Schedule!
         </h1>
-        <p className="mt-2 text-center text-sm md:text-base text-charcoal/70">
+        <p className="mt-2 text-center text-sm md:text-base text-charcoal/70 dark:text-white/70">
           View all events and activities for the weekend.
         </p>
       </section>
 
-
       {/* Tabs */}
-      <div className="sticky top-0 z-10 -mx-4 px-4 py-2 bg-sand/80 backdrop-blur">
-        <div className="rounded-2xl p-2 bg-white/60 backdrop-blur shadow">
+      <div className="sticky top-0 z-10 -mx-4 px-4 py-2 bg-sand/80 dark:bg-transparent backdrop-blur">
+        <div className="glass p-3 rounded-3xl">
           <Tabs value={activeDay} onValueChange={setActiveDay} className="w-full">
             <TabsList className="grid w-full grid-cols-3 md:grid-cols-5 lg:grid-cols-7">
               {dayEntries.map(([day]) => (
@@ -450,16 +449,10 @@ function EventCard({ ev }: { ev: UiEvent }) {
   return (
     <GlassCard
       accent={eventAccent(ev)}
-      className={cn(isLive && "ring-2 ring-team-red/70")}
+      className={cn("relative overflow-hidden p-4", isLive && "ring-2 ring-team-red/70")}
       href={bracketHref}
     >
-      <div
-        id={`event-${ev.id}`}
-        className={cn(
-          "rounded-2xl p-4 bg-white/80 backdrop-blur shadow relative overflow-hidden",
-          isLive && "ring-2 ring-team-red/70"
-        )}
-      >
+      <div id={`event-${ev.id}`} className="relative">
         {isLive && <LiveProgress ev={ev} />}
 
         <div className="flex items-start justify-between gap-3">
@@ -480,20 +473,20 @@ function EventCard({ ev }: { ev: UiEvent }) {
 
             <div className="flex flex-wrap items-center gap-2.5 text-sm opacity-80">
               {ev.startTime && (
-                <span className="inline-flex items-center gap-1 rounded-full px-2 py-1 bg-white/70">
+                <span className="inline-flex items-center gap-1 pill">
                   <Clock className="h-3.5 w-3.5" />
                   {fmtTime(ev.startTime)}
                   {ev.endTime ? `–${fmtTime(ev.endTime)}` : ""}
                 </span>
               )}
               {ev.locationLabel && (
-                <span className="inline-flex items-center gap-1 rounded-full px-2 py-1 bg-white/70">
+                <span className="inline-flex items-center gap-1 pill">
                   <MapPin className="h-3.5 w-3.5" />
                   {ev.locationLabel}
                 </span>
               )}
               {ev.type === "game" && (
-                <span className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 bg-white/70">
+                <span className="inline-flex items-center gap-1.5 pill">
                   <Trophy className="h-3.5 w-3.5" />
                   {/* Screen-reader label so the visuals are accessible */}
                   <span className="sr-only">
@@ -503,15 +496,15 @@ function EventCard({ ev }: { ev: UiEvent }) {
                   {/* Coins */}
                   <span className="flex items-center gap-1.5" aria-hidden>
                     <Coin tone="gold" className={isLive ? "coin-shimmer" : ""}>
-          {ev.scoring?.first ?? 3}
-        </Coin>
+                      {ev.scoring?.first ?? 3}
+                    </Coin>
                     <Coin tone="silver">{ev.scoring?.second ?? 2}</Coin>
                     <Coin tone="bronze">{ev.scoring?.third ?? 1}</Coin>
                   </span>
                 </span>
               )}
               {ev.hostFamily && (
-                <span className="inline-flex items-center gap-1 rounded-full px-2 py-1 bg-white/70">
+                <span className="inline-flex items-center gap-1 pill">
                   Host: {ev.hostFamily}
                 </span>
               )}

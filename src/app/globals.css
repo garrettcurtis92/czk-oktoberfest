@@ -2,10 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { 
+/* --- Theme tokens --- */
+:root {
   color-scheme: light dark;
-  
-  /* Team colors as CSS custom properties for dynamic styling */
+  --surface: 255 255 255;        /* white */
+  --surface-weak: 255 255 255;   /* glass on light */
+  --text: 47 52 64;              /* charcoal */
+
+  /* team color vars (used inline on dots) */
   --tw-color-team-red: #E45757;
   --tw-color-team-orange: #F39B2B;
   --tw-color-team-yellow: #F3D23B;
@@ -14,46 +18,106 @@
   --tw-color-team-purple: #8C59D9;
 }
 
-body { background: white; color: #1e2230; }
+/* Dark overrides */
+.dark {
+  --surface: 10 12 16;          /* #0A0C10 */
+  --surface-weak: 20 24 32;     /* slightly lighter for glass */
+  --text: 244 244 246;          /* near-white */
 
-
-/* Override shadcn dropdowns to always look like cards in light mode */
-[data-radix-popper-content-wrapper] > div[data-state][data-side] {
-  background: white;
-  color: rgb(17 24 39);
-  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
-  border: 1px solid rgb(229 231 235);
-  border-radius: 0.75rem;
+  /* optional brighter team shades in dark if you want:
+  --tw-color-team-red: #ff6b6b;
+  --tw-color-team-orange: #ffa726;
+  --tw-color-team-yellow: #ffee58;
+  --tw-color-team-green: #66bb6a;
+  --tw-color-team-blue: #42a5f5;
+  --tw-color-team-purple: #ab47bc;
+  */
 }
 
-/* Optional: style for dark mode toggle later */
+/* Page base colors */
+body {
+  @apply bg-sand text-[rgb(var(--text))];
+}
+.dark body {
+  /* deep navy like your screenshots */
+  background: #0f1a28;
+  color: rgb(var(--text));
+}
+
+/* --- Reusable surfaces --- */
+
+/* Glassy container used for hero wrappers and sections */
+.glass {
+  @apply backdrop-blur;
+  background: linear-gradient(
+    180deg,
+    rgba(var(--surface-weak), 0.28),
+    rgba(var(--surface-weak), 0.18)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  border-radius: 1.25rem; /* ~rounded-2xl/3xl */
+}
+.dark .glass {
+  background: linear-gradient(
+    180deg,
+    rgba(var(--surface-weak), 0.30),
+    rgba(var(--surface-weak), 0.22)
+  );
+  border-color: rgba(255,255,255,0.08);
+}
+
+/* Card surface used by team/event/leaderboard/bracket */
+.card-surface {
+  @apply backdrop-blur;
+  background: linear-gradient(
+    180deg,
+    rgba(var(--surface), 0.85),
+    rgba(var(--surface), 0.75)
+  );
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 1rem; /* rounded-2xl */
+  box-shadow: 0 6px 24px rgba(0,0,0,0.06);
+}
+.dark .card-surface {
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.10),
+    rgba(255,255,255,0.06)
+  );
+  border-color: rgba(255,255,255,0.08);
+  box-shadow: 0 10px 34px rgba(0,0,0,0.45);
+}
+
+/* Small pill chips inside cards (time, location, status) */
+.pill {
+  @apply rounded-full px-2 py-1 text-sm;
+  background: rgba(255,255,255,0.70);
+}
+.dark .pill {
+  background: rgba(255,255,255,0.10);
+}
+
+/* Bottom dock base */
+.nav-surface {
+  @apply backdrop-blur;
+  background: rgba(255,255,255,0.88);
+  border: 1px solid rgba(0,0,0,0.08);
+}
+.dark .nav-surface {
+  background: rgba(30,35,44,0.88);
+  border-color: rgba(255,255,255,0.10);
+}
+
+/* shadcn poppers in both themes */
+[data-radix-popper-content-wrapper] > div[data-state][data-side] {
+  @apply rounded-xl shadow-2xl;
+  background: rgb(255 255 255);
+  color: rgb(17 24 39);
+  border: 1px solid rgb(229 231 235);
+}
 .dark [data-radix-popper-content-wrapper] > div[data-state][data-side] {
   background: rgb(23 23 23);
   color: rgb(243 244 246);
   border: 1px solid rgb(55 65 81);
-}
-:root {
-  --glass-bg: 255 255 255;        /* base RGB for white */
-  --glass-alpha: 0.8;             /* backdrop background alpha */
-  --glass-blur: 16px;             /* backdrop blur radius */
-  --glass-shadow: 0 10px 30px rgba(0,0,0,0.08);
-  --glass-border: 0,0,0,0.05;     /* border rgba */
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --glass-bg: 20 20 20;
-    --glass-alpha: 0.6;
-    --glass-shadow: 0 10px 30px rgba(0,0,0,0.35);
-    --glass-border: 255,255,255,0.08;
-  }
-}
-
-/* Reusable glass container */
-.glass {
-  background-color: rgba(var(--glass-bg), var(--glass-alpha));
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  box-shadow: var(--glass-shadow);
-  border: 1px solid rgba(var(--glass-border));
 }

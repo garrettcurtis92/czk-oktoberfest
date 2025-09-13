@@ -45,7 +45,7 @@ export default function CaptainCard({
       <div className="relative z-10 flex items-center gap-4">
         {/* avatar */}
         <div
-          className="grid place-items-center rounded-2xl border border-white/70 bg-white/70 backdrop-blur h-16 w-16 shrink-0 overflow-hidden"
+          className="grid place-items-center rounded-2xl border border-white/20 dark:border-gray-700/30 bg-gradient-to-br from-white/20 via-white/10 to-white/5 dark:from-gray-900/20 dark:via-gray-800/10 dark:to-gray-700/5 backdrop-blur-md h-16 w-16 shrink-0 overflow-hidden"
           style={{ boxShadow: "inset 0 1px 0 rgba(255,255,255,0.6)" }}
           aria-hidden={!avatarUrl}
         >

@@ -15,11 +15,9 @@ export default function GlassCard({ accent = "rgba(0,0,0,0.12)", className = "",
   const content = (
     <div
       className={[
-        "relative overflow-hidden rounded-3xl p-5",
-        "bg-gradient-to-br from-white/80 via-white/60 to-white/30 backdrop-blur",
-        "border border-white/60 shadow-[0_10px_30px_rgba(0,0,0,0.08)]",
-        "transition hover:shadow-[0_14px_40px_rgba(0,0,0,0.12)]",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/10",
+        "relative overflow-hidden rounded-3xl p-5 glass",
+        "transition hover:shadow-[0_14px_40px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_14px_40px_rgba(0,0,0,0.4)]",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/10 dark:focus-visible:ring-white/20",
         className,
       ].join(" ")}
     >

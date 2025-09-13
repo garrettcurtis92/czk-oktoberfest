@@ -3,10 +3,11 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { CalendarDays, Home, Trophy, Menu, Flag, User } from "lucide-react";
-import { useState, useEffect } from "react";
+import { CalendarDays, Trophy, Flag, User, MoreHorizontal } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
 import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { HamburgerMenu } from "@/components/HamburgerMenu";
 
 type TabItem = {
   href: string;
@@ -28,14 +29,14 @@ function TabLink({
         className={cn(
           "relative flex flex-col items-center justify-center rounded-2xl px-3 py-2 text-xs",
           "focus:outline-none focus-visible:ring-2 focus-visible:ring-black/20",
-          !active && "hover:bg-white/60"
+          !active && "hover:bg-white/60 dark:hover:bg-white/10"
         )}
       >
         {/* gliding highlight */}
         {active && (
           <motion.span
             layoutId="tabHighlight"
-            className="absolute inset-0 rounded-2xl bg-white/80 shadow"
+            className="absolute inset-0 rounded-2xl bg-white/80 dark:bg-white/20 shadow"
             transition={
               reduceMotion
                 ? { duration: 0 }
@@ -45,7 +46,7 @@ function TabLink({
         )}
         <div className="relative z-10 flex flex-col items-center">
           <div className="h-5 w-5">{icon}</div>
-          <span className={cn("mt-1", active ? "text-charcoal" : "text-charcoal/70")}>
+          <span className={cn("mt-1", active ? "text-charcoal dark:text-white" : "text-charcoal/70 dark:text-white/70")}>
             {label}
           </span>
         </div>
@@ -56,8 +57,12 @@ function TabLink({
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-20 bg-sand/80 backdrop-blur">
-      <div className="mx-auto max-w-3xl px-4 py-3 flex items-center justify-center">
+    <header className="sticky top-0 z-20 glass">
+      <div className="mx-auto max-w-3xl px-4 py-3 flex items-center justify-between">
+        {/* Spacer for balance */}
+        <div className="w-10" />
+        
+        {/* Logo */}
         <Link href="/" className="block">
           <Image
             src="/logo.svg"
@@ -68,6 +73,9 @@ export function SiteHeader() {
             priority
           />
         </Link>
+        
+        {/* Hamburger Menu */}
+        <HamburgerMenu />
       </div>
     </header>
   );
@@ -77,22 +85,34 @@ export function BottomTabs() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const reduceMotion = useReducedMotion();
+  const isTogglingRef = useRef(false);
+  const [backdropBlocked, setBackdropBlocked] = useState(false);
 
   useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
+    console.log('BottomTabs component mounted');
+    return () => console.log('BottomTabs component unmounted');
+  }, []);
+
+  useEffect(() => {
+    console.log('Open state changed to:', open);
+  }, [open]);
+
+  // useEffect(() => {
+  //   console.log('Pathname changed to:', pathname, '- setting open to false');
+  //   setOpen(false);
+  // }, [pathname]);
 
   const items: TabItem[] = [
-    { href: "/", label: "Teams", icon: <User className="h-5 w-5" /> },
-    { href: "/schedule", label: "Schedule", icon: <CalendarDays className="h-5 w-5" /> },
-    { href: "/leaderboard", label: "Scores", icon: <Trophy className="h-5 w-5" /> },
-    { href: "/brackets", label: "Brackets", icon: <Flag className="h-5 w-5" /> },
+    { href: "/", label: "Teams", icon: <User className="h-5 w-5 text-charcoal dark:text-white" /> },
+    { href: "/schedule", label: "Schedule", icon: <CalendarDays className="h-5 w-5 text-charcoal dark:text-white" /> },
+    { href: "/leaderboard", label: "Scores", icon: <Trophy className="h-5 w-5 text-charcoal dark:text-white" /> },
+    { href: "/brackets", label: "Brackets", icon: <Flag className="h-5 w-5 text-charcoal dark:text-white" /> },
   ];
 
   return (
     <>
-      <nav className="fixed inset-x-0 bottom-6 z-30 mx-auto w-full max-w-3xl px-4">
-        <div className="glass rounded-3xl shadow-lg border border-black/5">
+      <nav className="fixed inset-x-0 bottom-6 z-[60] mx-auto w-full max-w-3xl px-4">
+        <div className="rounded-3xl nav-surface shadow-lg">
           <div className="relative flex items-center justify-between gap-1 p-2">
             {items.map((it) => {
               const active = it.href === "/" ? pathname === "/" : pathname.startsWith(it.href);
@@ -106,20 +126,38 @@ export function BottomTabs() {
               );
             })}
 
-            {/* trigger */}
+            {/* Admin Menu trigger */}
             <motion.button
               whileTap={reduceMotion ? undefined : { scale: 0.96 }}
-              onClick={() => setOpen((v) => !v)}
-              className="ml-1 relative flex flex-col items-center justify-center rounded-2xl px-3 py-2 text-xs text-charcoal/70 focus:outline-none focus-visible:ring-2 focus-visible:ring-black/20 hover:bg-white/60"
+              onClick={(e) => {
+                e.stopPropagation();
+
+                if (isTogglingRef.current) return;
+                isTogglingRef.current = true;
+
+                const newOpen = !open;
+
+                if (newOpen) {
+                  setBackdropBlocked(true);
+                  setTimeout(() => setBackdropBlocked(false), 200);
+                }
+
+                setOpen(newOpen);
+
+                setTimeout(() => {
+                  isTogglingRef.current = false;
+                }, 100);
+              }}
+              className="ml-1 relative flex flex-col items-center justify-center rounded-2xl px-3 py-2 text-xs text-charcoal/70 dark:text-white/70 focus:outline-none focus-visible:ring-2 focus-visible:ring-black/20 hover:bg-white/60 dark:hover:bg-white/10"
               aria-expanded={open}
               aria-haspopup="menu"
               aria-controls="more-menu"
             >
-              <Menu className="h-5 w-5" />
+              <MoreHorizontal className="h-5 w-5" />
               <span className="mt-1">More</span>
             </motion.button>
 
-            {/* anchored menu */}
+            {/* Admin anchored menu */}
             <AnimatePresence>
               {open && (
                 <motion.div
@@ -129,12 +167,20 @@ export function BottomTabs() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 8 }}
                   transition={reduceMotion ? { duration: 0 } : { duration: 0.18 }}
-                  className="absolute right-2 -top-2 translate-y-[-100%] z-30 rounded-2xl border border-black/5 bg-white shadow-lg"
+                  className="absolute right-2 -top-2 translate-y-[-100%] z-[70] rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-gray-900 shadow-lg"
                 >
-                  <Link href="/admin/live" onClick={() => setOpen(false)} className="block px-4 py-2 text-sm">
+                  <Link 
+                    href="/admin/live" 
+                    onClick={() => setOpen(false)} 
+                    className="block px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 first:rounded-t-2xl last:rounded-b-2xl"
+                  >
                     Admin · Live
                   </Link>
-                  <Link href="/admin/score" onClick={() => setOpen(false)} className="block px-4 py-2 text-sm">
+                  <Link 
+                    href="/admin/score" 
+                    onClick={() => setOpen(false)} 
+                    className="block px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 first:rounded-t-2xl last:rounded-b-2xl"
+                  >
                     Admin · Scoring
                   </Link>
                 </motion.div>
@@ -148,8 +194,11 @@ export function BottomTabs() {
       {open && (
         <button
           aria-hidden
-          onClick={() => setOpen(false)}
-          className="fixed inset-0 z-20 bg-transparent"
+          onClick={(e) => {
+            e.stopPropagation();
+            setOpen(false);
+          }}
+          className={"fixed inset-0 z-[40] bg-transparent " + (backdropBlocked ? "pointer-events-none" : "")}
         />
       )}
 

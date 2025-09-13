@@ -7,7 +7,7 @@ export default async function UnlockPage({ searchParams }: { searchParams?: Reco
 
   return (
     <main className="mx-auto max-w-sm p-6 space-y-4">
-      <div className="rounded-2xl bg-white/80 backdrop-blur shadow p-6">
+      <div className="rounded-2xl bg-gradient-to-br from-white/20 via-white/10 to-white/5 dark:from-gray-900/20 dark:via-gray-800/10 dark:to-gray-700/5 backdrop-blur-md shadow border border-white/20 dark:border-gray-700/30 p-6">
         <h1 className="text-2xl font-display mb-2">Admin Unlock</h1>
         <p className="text-sm opacity-70 mb-4">Enter the shared admin key to access controls.</p>
 
@@ -27,7 +27,7 @@ export default async function UnlockPage({ searchParams }: { searchParams?: Reco
       </div>
 
       <form action={logoutAction}>
-        <button className="w-full rounded-xl bg-white/80 backdrop-blur shadow px-3 py-2">Logout</button>
+        <button className="w-full rounded-xl bg-gradient-to-br from-white/20 via-white/10 to-white/5 dark:from-gray-900/20 dark:via-gray-800/10 dark:to-gray-700/5 backdrop-blur-md shadow border border-white/20 dark:border-gray-700/30 px-3 py-2">Logout</button>
       </form>
     </main>
   );

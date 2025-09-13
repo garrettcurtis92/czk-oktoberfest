@@ -62,7 +62,7 @@ export default async function LeaderboardPage() {
       <LiveTicker />
 
       {/* Hero / Header */}
-      <section className="relative rounded-3xl p-8 shadow bg-gradient-to-br from-white/80 via-white/60 to-white/30 backdrop-blur overflow-hidden">
+      <section className="relative rounded-3xl p-8 shadow bg-gradient-to-br from-white/20 via-white/10 to-white/5 dark:from-gray-900/20 dark:via-gray-800/10 dark:to-gray-700/5 backdrop-blur-md overflow-hidden border border-white/20 dark:border-gray-700/30">
         {/* subtle blobs */}
         <div className="absolute -top-20 -right-16 h-48 w-48 rounded-full bg-amber-300/20 blur-3xl" />
         <div className="absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-emerald-300/20 blur-3xl" />
@@ -70,7 +70,7 @@ export default async function LeaderboardPage() {
         <h1 className="text-3xl md:text-4xl font-display tracking-tight text-center">
           Leaderboard
         </h1>
-        <p className="mt-2 text-center text-sm md:text-base text-charcoal/70">
+        <p className="mt-2 text-center text-sm md:text-base text-charcoal/70 dark:text-white/70">
           Live team standings and the most recent scoring updates.
         </p>
       </section>
@@ -78,7 +78,7 @@ export default async function LeaderboardPage() {
       {/* Leaderboard totals */}
 
 {/* Leaderboard totals */}
-<section className="rounded-2xl p-4 bg-white/70 backdrop-blur shadow">
+<section className="rounded-2xl p-4 bg-gradient-to-br from-white/20 via-white/10 to-white/5 dark:from-gray-900/20 dark:via-gray-800/10 dark:to-gray-700/5 backdrop-blur-md shadow border border-white/20 dark:border-gray-700/30">
   <h2 className="text-xl font-display mb-2">Standings</h2>
 
   {teams.length === 0 ? (
@@ -116,7 +116,7 @@ export default async function LeaderboardPage() {
 
 
       {/* Recent scoring activity */}
-      <section className="rounded-2xl p-4 bg-white/70 backdrop-blur shadow">
+      <section className="rounded-2xl p-4 bg-gradient-to-br from-white/20 via-white/10 to-white/5 dark:from-gray-900/20 dark:via-gray-800/10 dark:to-gray-700/5 backdrop-blur-md shadow border border-white/20 dark:border-gray-700/30">
         <h2 className="text-xl font-display mb-2">Recent Activity</h2>
 
         {recent.length === 0 ? (

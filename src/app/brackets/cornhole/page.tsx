@@ -18,7 +18,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ e
   if (!eventIdStr) {
     return (
       <main className="p-4">
-        <div className="rounded-2xl p-6 bg-white/70 backdrop-blur shadow">
+        <div className="rounded-2xl p-6 bg-gradient-to-br from-white/20 via-white/10 to-white/5 dark:from-gray-900/20 dark:via-gray-800/10 dark:to-gray-700/5 backdrop-blur-md shadow border border-white/20 dark:border-gray-700/30">
           <h1 className="text-2xl font-display mb-4">Cornhole Bracket</h1>
           <div className="p-4 bg-yellow-50 rounded-lg">
             <p className="text-sm">
@@ -36,7 +36,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ e
   if (isNaN(eventId)) {
     return (
       <main className="p-4">
-        <div className="rounded-2xl p-6 bg-white/70 backdrop-blur shadow">
+        <div className="rounded-2xl p-6 bg-gradient-to-br from-white/20 via-white/10 to-white/5 dark:from-gray-900/20 dark:via-gray-800/10 dark:to-gray-700/5 backdrop-blur-md shadow border border-white/20 dark:border-gray-700/30">
           <h1 className="text-2xl font-display mb-4">Cornhole Bracket</h1>
           <div className="p-4 bg-red-50 rounded-lg">
             <p className="text-sm">
@@ -62,7 +62,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ e
     if (eventExists.length === 0) {
       return (
         <main className="p-4">
-          <div className="rounded-2xl p-6 bg-white/70 backdrop-blur shadow">
+          <div className="rounded-2xl p-6 bg-gradient-to-br from-white/20 via-white/10 to-white/5 dark:from-gray-900/20 dark:via-gray-800/10 dark:to-gray-700/5 backdrop-blur-md shadow border border-white/20 dark:border-gray-700/30">
             <h1 className="text-2xl font-display mb-4">Cornhole Bracket</h1>
             <div className="p-4 bg-red-50 rounded-lg">
               <p className="text-sm">
@@ -78,7 +78,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ e
     console.error('Error checking event existence:', error);
     return (
       <main className="p-4">
-        <div className="rounded-2xl p-6 bg-white/70 backdrop-blur shadow">
+        <div className="rounded-2xl p-6 bg-gradient-to-br from-white/20 via-white/10 to-white/5 dark:from-gray-900/20 dark:via-gray-800/10 dark:to-gray-700/5 backdrop-blur-md shadow border border-white/20 dark:border-gray-700/30">
           <h1 className="text-2xl font-display mb-4">Cornhole Bracket</h1>
           <div className="p-4 bg-red-50 rounded-lg">
             <p className="text-sm">
@@ -103,7 +103,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ e
     console.error('Database query error:', error);
     return (
       <main className="p-4">
-        <div className="rounded-2xl p-6 bg-white/70 backdrop-blur shadow">
+        <div className="rounded-2xl p-6 bg-gradient-to-br from-white/20 via-white/10 to-white/5 dark:from-gray-900/20 dark:via-gray-800/10 dark:to-gray-700/5 backdrop-blur-md shadow border border-white/20 dark:border-gray-700/30">
           <h1 className="text-2xl font-display mb-4">Cornhole Bracket</h1>
           <div className="p-4 bg-red-50 rounded-lg">
             <p className="text-sm">
@@ -132,7 +132,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ e
 
   return (
     <main className="p-4">
-      <div className="rounded-2xl p-6 bg-white/70 backdrop-blur shadow">
+      <div className="rounded-2xl p-6 bg-gradient-to-br from-white/20 via-white/10 to-white/5 dark:from-gray-900/20 dark:via-gray-800/10 dark:to-gray-700/5 backdrop-blur-md shadow border border-white/20 dark:border-gray-700/30">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-display">Cornhole Bracket</h1>

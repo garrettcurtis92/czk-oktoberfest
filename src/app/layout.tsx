@@ -4,6 +4,7 @@ import { SiteHeader, BottomTabs } from "@/components/nav/site-nav";
 import PageTransition from "@/components/PageTransition";
 import SplashVerse from "@/components/SplashVerse";
 import ConfettiBurst from "@/components/ConfettiBurst";
+import { ThemeContextProvider } from "@/components/ThemeProvider";
 import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
@@ -34,18 +35,36 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                const theme = localStorage.getItem('czk-theme') || 'system';
+                const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                const appliedTheme = theme === 'system' ? systemTheme : theme;
+                document.documentElement.classList.toggle('dark', appliedTheme === 'dark');
+              } catch (e) {}
+            `,
+          }}
+        />
+      </head>
+  <body suppressHydrationWarning>
+        <ThemeContextProvider>
+          <link rel="apple-touch-icon" href="/icons/icon-192.png" />
 
-      <body className="bg-sand text-charcoal">
-        <SplashVerse displayMs={6000} fadeMs={700} />
-        <ConfettiBurst />
-        <SiteHeader />
-        <main className="mx-auto max-w-3xl px-4 py-4">
-          <PageTransition>{children}</PageTransition>
-        </main>
-        <BottomTabs />
-        <Toaster />
+          <div className="bg-sand text-charcoal dark:bg-gray-900 dark:text-white transition-colors">
+            <SplashVerse displayMs={6000} fadeMs={700} />
+            <ConfettiBurst />
+            <SiteHeader />
+            <main className="mx-auto max-w-3xl px-4 py-4">
+              <PageTransition>{children}</PageTransition>
+            </main>
+            <BottomTabs />
+            <Toaster />
+          </div>
+        </ThemeContextProvider>
       </body>
     </html>
   );
