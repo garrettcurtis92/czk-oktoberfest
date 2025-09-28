@@ -14,6 +14,7 @@
     "db:add-bonfire": "tsx -r dotenv/config src/db/scripts/add-morning-bonfire.ts",
     "db:remove-tourney-block": "tsx -r dotenv/config src/db/scripts/remove-tourney-block.ts",
     "db:update-dinner-location": "tsx -r dotenv/config src/db/scripts/update-dinner-location.ts"
+    ,"validate:team-images": "tsx src/db/scripts/validate-team-images.ts"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.10",
