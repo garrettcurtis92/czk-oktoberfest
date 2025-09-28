@@ -64,13 +64,7 @@ export default async function Home() {
     label="Team colors: Blue, Orange, Green, Red"
   />
 
-  <div className="mt-6 flex justify-center gap-3">
-    <a
-      href="/teams"
-      className="rounded-xl px-4 py-2 text-sm font-medium bg-charcoal text-white hover:opacity-95 transition"
-    >
-      View Teams
-    </a>
+  <div className="mt-6 flex justify-center">
     <a
       href="/leaderboard"
       className="rounded-xl px-4 py-2 text-sm font-medium border border-charcoal/20 hover:bg-black/5 transition"
@@ -84,16 +78,9 @@ export default async function Home() {
 </section>
 
 
-      {/* Teams (glassy cards like Schedule) */}
-      <section className="rounded-2xl p-4 bg-gradient-to-br from-white/20 via-white/10 to-white/5 dark:from-gray-900/20 dark:via-gray-800/10 dark:to-gray-700/5 backdrop-blur-md shadow border border-white/20 dark:border-gray-700/30">
-        <div className="mb-3 flex items-baseline justify-between">
-        </div>
-
-        {teams.length === 0 ? (
-          <div className="card-surface p-4 relative overflow-hidden">
-            No teams found yet. Seed or add teams to see them here.
-          </div>
-        ) : (
+      {/* Captain Cards Grid */}
+      {teams.length > 0 && (
+        <section className="rounded-2xl p-4 bg-gradient-to-br from-white/20 via-white/10 to-white/5 dark:from-gray-900/20 dark:via-gray-800/10 dark:to-gray-700/5 backdrop-blur-md shadow border border-white/20 dark:border-gray-700/30">
           <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {teams.map((t) => (
               <li key={t.id}>
@@ -101,8 +88,8 @@ export default async function Home() {
               </li>
             ))}
           </ul>
-        )}
-      </section>
+        </section>
+      )}
     </main>
   );
 }

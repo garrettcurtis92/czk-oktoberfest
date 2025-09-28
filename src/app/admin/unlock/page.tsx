@@ -1,7 +1,10 @@
 import { unlockAction, logoutAction } from "./actions";
 
-export default async function UnlockPage({ searchParams }: { searchParams?: Record<string, string | string[] | undefined> }) {
-  const params = await searchParams;
+type RawSearchParams = Record<string, string | string[] | undefined>;
+
+export default async function UnlockPage({ searchParams }: { searchParams?: Promise<unknown> }) {
+  const resolved = (await searchParams) as RawSearchParams | undefined;
+  const params = resolved;
   const next = (params?.next as string) || "/admin";
   const error = params?.error ? true : false;
 

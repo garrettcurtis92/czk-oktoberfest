@@ -16,7 +16,12 @@ import {
   clearLiveAction,
   finishPastAction,
   resetFinishedAction,
+  createEventAction,
+  updateEventAction,
 } from "./actions";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type Row = {
   id: number;
@@ -43,9 +48,10 @@ function statusAccent(s: Row["status"]) {
   }
 }
 
-/** Per-row dropdown that submits + closes */
-function RowMenu({ id }: { id: number }) {
+/** Unified per-row menu: Edit + statuses */
+function RowMenu({ id, onEdit, currentStatus }: { id: number; onEdit: () => void; currentStatus: Row["status"] }) {
   const [open, setOpen] = useState(false);
+  const statuses: Row["status"][] = ["scheduled", "live", "paused", "finished"];
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
@@ -53,24 +59,25 @@ function RowMenu({ id }: { id: number }) {
           <MoreHorizontal className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-
-      <DropdownMenuContent
-        align="end"
-        className="rounded-xl bg-white text-gray-900 shadow-xl border border-gray-200 p-1"
-      >
-        <div className="px-2 py-1.5 text-xs font-medium text-gray-500">Set Status</div>
+      <DropdownMenuContent align="end" className="rounded-xl bg-white text-gray-900 shadow-xl border border-gray-200 p-1 w-48">
+        <div className="px-2 py-1.5 text-xs font-medium text-gray-500">Event Actions</div>
         <div className="h-px bg-gray-200 my-1" />
-        {(["scheduled", "live", "paused", "finished"] as const).map((status) => (
+        <DropdownMenuItem
+          onSelect={(e) => { e.preventDefault(); onEdit(); setOpen(false); }}
+          className="flex items-center justify-between"
+        >
+          Edit<span className="text-xs opacity-60">⌘E</span>
+        </DropdownMenuItem>
+        <div className="h-px bg-gray-200 my-1" />
+        {statuses.map((s) => (
           <DropdownMenuItem
-            key={status}
-            onSelect={(ev) => {
-              ev.preventDefault();
-              (document.getElementById(`set-${id}-${status}`) as HTMLFormElement)?.requestSubmit();
-              setOpen(false);
-            }}
-            className="capitalize"
+            key={s}
+            disabled={s === currentStatus}
+            onSelect={(e) => { e.preventDefault(); (document.getElementById(`set-${id}-${s}`) as HTMLFormElement)?.requestSubmit(); setOpen(false); }}
+            className="flex items-center justify-between capitalize"
           >
-            {status}
+            <span>{s}</span>
+            {s === currentStatus && <span className="text-xs opacity-60">●</span>}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
@@ -80,6 +87,7 @@ function RowMenu({ id }: { id: number }) {
 
 export default function AdminLiveClient({ rows }: { rows: Row[] }) {
   const [bulkOpen, setBulkOpen] = useState(false);
+  const [editId, setEditId] = useState<number | null>(null);
 
   // Stable sort (day + time)
   const safeRows = [...rows].sort((a, b) => {
@@ -88,9 +96,11 @@ export default function AdminLiveClient({ rows }: { rows: Row[] }) {
     return aKey.localeCompare(bKey);
   });
 
+  const _editing = editId != null ? safeRows.find(r => r.id === editId) : null; // reserved for future inline edit feature
+
   return (
     <main className="p-4 space-y-4">
-      {/* Header / toolbar in a glass card */}
+      {/* Header / toolbar + create form */}
       <GlassCard accent="rgba(0,0,0,0.12)" className="p-4">
         <div className="flex items-center justify-between gap-2">
           <h1 className="text-2xl font-display">Admin · Live Controls</h1>
@@ -144,6 +154,62 @@ export default function AdminLiveClient({ rows }: { rows: Row[] }) {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          {/* Create Event inline form */}
+        </div>
+        <div className="mt-4">
+          <details className="group">
+            <summary className="cursor-pointer text-sm font-medium mb-2">➕ Create New Event</summary>
+            <form action={createEventAction} className="grid gap-2 md:grid-cols-8 items-end text-sm">
+              <div className="md:col-span-2 space-y-1">
+                <label className="block text-xs uppercase tracking-wide opacity-70">Title</label>
+                <Input name="title" placeholder="Event title" required />
+              </div>
+              <div className="space-y-1">
+                <label className="block text-xs uppercase tracking-wide opacity-70">Day</label>
+                <Input name="day" placeholder="2025-10-03" pattern="\\d{4}-\\d{2}-\\d{2}" required />
+              </div>
+              <div className="space-y-1">
+                <label className="block text-xs uppercase tracking-wide opacity-70">Start</label>
+                <Input name="startTime" placeholder="09:00" pattern="\\d{2}:\\d{2}" />
+              </div>
+              <div className="space-y-1">
+                <label className="block text-xs uppercase tracking-wide opacity-70">End</label>
+                <Input name="endTime" placeholder="10:00" pattern="\\d{2}:\\d{2}" />
+              </div>
+              <div className="space-y-1">
+                <label className="block text-xs uppercase tracking-wide opacity-70">Location</label>
+                <Input name="locationLabel" placeholder="Lil Z Shop" />
+              </div>
+              <div className="space-y-1">
+                <label className="block text-xs uppercase tracking-wide opacity-70">Type</label>
+                <Select name="type" defaultValue="social">
+                  <SelectTrigger className="w-full"><SelectValue placeholder="Select" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="game">Game</SelectItem>
+                    <SelectItem value="dinner">Dinner</SelectItem>
+                    <SelectItem value="social">Social</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1">
+                <label className="block text-xs uppercase tracking-wide opacity-70">Kind</label>
+                <Select name="kind" defaultValue="social">
+                  <SelectTrigger className="w-full"><SelectValue placeholder="Kind" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="game">Game</SelectItem>
+                    <SelectItem value="social">Social</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1">
+                <label className="block text-xs uppercase tracking-wide opacity-70">Points</label>
+                <Input name="points" type="number" min={0} defaultValue={0} />
+              </div>
+              <div className="md:col-span-8 flex justify-end">
+                <Button type="submit" className="rounded-xl">Create</Button>
+              </div>
+            </form>
+          </details>
         </div>
       </GlassCard>
 
@@ -185,28 +251,71 @@ export default function AdminLiveClient({ rows }: { rows: Row[] }) {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex items-center gap-2">
-                      {e.status !== "live" ? (
-                          <form action={setStatusAction}>
-                            <input type="hidden" name="id" value={e.id} />
-                            <input type="hidden" name="status" value="live" />
-                            <Button
-                              type="submit"
-                              className={"inline-flex items-center gap-2 rounded-3xl px-3 py-1 text-sm font-semibold glass text-white shadow-md hover:shadow-lg focus-visible:ring-2 focus-visible:ring-black/10 bg-gradient-to-r from-blue-500/95 via-blue-600/95 to-indigo-600/95"}
-                            >
-                              Go Live
-                            </Button>
-                          </form>
-                      ) : (
-                        <span
-                          className="inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold bg-team-red text-white shadow-sm"
-                          aria-disabled
-                        >
-                          Live
-                        </span>
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      {e.status === "live" && (
+                        <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-team-red text-white shadow-sm">Live</span>
                       )}
-
-                      <RowMenu id={e.id} />
+                      <Dialog open={editId === e.id} onOpenChange={(o) => setEditId(o ? e.id : null)}>
+                        <DialogContent accent={statusAccent(e.status)} className="max-w-lg">
+                          <DialogHeader>
+                            <DialogTitle>Edit Event</DialogTitle>
+                          </DialogHeader>
+                          <form action={updateEventAction} className="space-y-3 text-sm">
+                            <input type="hidden" name="id" value={e.id} />
+                            <div className="grid grid-cols-2 gap-3">
+                              <label className="space-y-1 col-span-2">
+                                <span className="block text-xs uppercase opacity-60">Title</span>
+                                <Input name="title" defaultValue={e.title} required />
+                              </label>
+                              <label className="space-y-1">
+                                <span className="block text-xs uppercase opacity-60">Day</span>
+                                <Input name="day" defaultValue={e.day} pattern="\\d{4}-\\d{2}-\\d{2}" required />
+                              </label>
+                              <label className="space-y-1">
+                                <span className="block text-xs uppercase opacity-60">Start</span>
+                                <Input name="startTime" defaultValue={e.startTime ?? ''} placeholder="HH:MM" pattern="\\d{2}:\\d{2}" />
+                              </label>
+                              <label className="space-y-1">
+                                <span className="block text-xs uppercase opacity-60">End</span>
+                                <Input name="endTime" defaultValue={''} placeholder="HH:MM" pattern="\\d{2}:\\d{2}" />
+                              </label>
+                              <label className="space-y-1 col-span-2">
+                                <span className="block text-xs uppercase opacity-60">Location</span>
+                                <Input name="locationLabel" defaultValue={e.locationLabel ?? ''} />
+                              </label>
+                              <label className="space-y-1">
+                                <span className="block text-xs uppercase opacity-60">Type</span>
+                                <Select name="type" defaultValue="social">
+                                  <SelectTrigger className="w-full"><SelectValue placeholder={"Type"} /></SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="game">Game</SelectItem>
+                                    <SelectItem value="dinner">Dinner</SelectItem>
+                                    <SelectItem value="social">Social</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </label>
+                              <label className="space-y-1">
+                                <span className="block text-xs uppercase opacity-60">Kind</span>
+                                <Select name="kind" defaultValue="social">
+                                  <SelectTrigger className="w-full"><SelectValue placeholder={"Kind"} /></SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="game">Game</SelectItem>
+                                    <SelectItem value="social">Social</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </label>
+                              <label className="space-y-1">
+                                <span className="block text-xs uppercase opacity-60">Points</span>
+                                <Input name="points" type="number" min={0} defaultValue={0} />
+                              </label>
+                            </div>
+                            <div className="flex justify-end gap-2 pt-2">
+                              <Button type="submit" className="rounded-xl">Save</Button>
+                            </div>
+                          </form>
+                        </DialogContent>
+                      </Dialog>
+                      <RowMenu id={e.id} currentStatus={e.status} onEdit={() => setEditId(e.id)} />
                     </div>
                   </div>
                 </GlassCard>
