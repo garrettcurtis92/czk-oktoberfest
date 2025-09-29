@@ -16,13 +16,13 @@ export const MEMBER_IMAGES: Record<TeamColor, Record<string, string>> = {
     grams: '/captains/grams.png', // TODO: replace placeholder
   },
   orange: {
-    tyler: '/captains/tyler.png', // TODO: replace placeholder
+    tyler: '/captains/tyler.jpg', // TODO: replace placeholder
     brandon: '/captains/brandon.png', // TODO: replace placeholder
     zack: '/captains/zach.jpg',
   },
   yellow: {
     becca: '/captains/becca.png',
-    tanner: '/captains/tanner.png', // TODO: replace placeholder
+    tanner: '/captains/tanner.jpg', // TODO: replace placeholder
   },
   green: {
     allyssa: '/captains/allyssa.jpg',
