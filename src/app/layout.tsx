@@ -28,9 +28,15 @@ export const metadata: Metadata = {
     type: "website",
   },
   manifest: "/manifest.json",
+  // Use the single SVG for all favicon links. NOTE: iOS home screen still prefers a PNG apple-touch-icon.
   icons: {
-    icon: "/icons/icon-192.png",
-    apple: "/icons/icon-192.png",
+    icon: [
+      { url: "/logo.svg", type: "image/svg+xml" },
+    ],
+    shortcut: [
+      { url: "/logo.svg", type: "image/svg+xml" },
+    ],
+    apple: "/logo2.png", 
   },
 };
 
@@ -53,7 +59,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
   <body suppressHydrationWarning>
         <ThemeContextProvider>
-          <link rel="CZK-logo" href="/CZK-logo.jpg" />
+          {/* Single SVG favicon usage (apple-touch PNG omitted per request) */}
           <div className="bg-sand text-charcoal dark:bg-gray-900 dark:text-white transition-colors">
             <SplashVerse displayMs={6000} fadeMs={700} />
             <ConfettiBurst />            
