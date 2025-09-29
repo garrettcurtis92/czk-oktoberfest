@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, Calendar, Trophy, Menu } from "lucide-react"; // swap icons as needed
+import { Home, Calendar, Trophy } from "lucide-react"; // swap icons as needed
 import Link from "next/link";
 
 export default function NavDock() {
@@ -19,10 +19,6 @@ export default function NavDock() {
           <Link href="/scores" className="flex flex-col items-center text-sm">
             <Trophy className="h-5 w-5" />
             <span>Scores</span>
-          </Link>
-          <Link href="/more" className="flex flex-col items-center text-sm">
-            <Menu className="h-5 w-5" />
-            <span>More</span>
           </Link>
         </div>
       </div>
