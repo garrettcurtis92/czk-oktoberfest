@@ -5,6 +5,20 @@ import { ROSTERS, type TeamColor } from '@/lib/rosters';
 
 interface Issue { level: 'error' | 'warn'; message: string; }
 
+// Minimal magic number detection for quick validation
+function sniffMagic(filePath: string): 'jpeg' | 'png' | 'other' | 'missing' {
+  try {
+    const fd = fs.openSync(filePath, 'r');
+    const buf = Buffer.alloc(10);
+    const bytes = fs.readSync(fd, buf, 0, 10, 0);
+    fs.closeSync(fd);
+    if (bytes < 4) return 'other';
+    if (buf[0] === 0xFF && buf[1] === 0xD8 && buf[2] === 0xFF) return 'jpeg';
+    if (buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4E && buf[3] === 0x47) return 'png';
+    return 'other';
+  } catch { return 'missing'; }
+}
+
 const allowedExt = ['.png','.jpg','.jpeg','.webp','.avif'];
 
 function slugify(name: string) {
@@ -37,6 +51,29 @@ function collect(): Issue[] {
     const full = path.join(teamsDirLower, dir.name);
     const files = fs.readdirSync(full).filter(f => allowedExt.includes(path.extname(f).toLowerCase()));
     fileIndex[color] = files;
+  }
+
+  // Placeholder & magic checks
+  for (const [color, files] of Object.entries(fileIndex)) {
+    for (const f of files) {
+      const full = path.join(teamsDirLower, color, f);
+      let stat: fs.Stats | null = null;
+      try { stat = fs.statSync(full); } catch { /* ignore */ }
+      if (!stat) continue;
+      // Tiny file heuristic: < 500 bytes OR exactly 67 bytes (common 1x1 png here)
+      if (stat.size < 500) {
+        issues.push({ level: 'warn', message: `Suspicious tiny image (potential placeholder) teams/${color}/${f} size=${stat.size}B` });
+      }
+      const ext = path.extname(f).toLowerCase();
+      const magic = sniffMagic(full);
+      if (magic === 'jpeg' && ext !== '.jpg' && ext !== '.jpeg') {
+        issues.push({ level: 'warn', message: `Extension mismatch: JPEG content but file extension ${ext} at teams/${color}/${f}` });
+      } else if (magic === 'png' && ext !== '.png') {
+        issues.push({ level: 'warn', message: `Extension mismatch: PNG content but file extension ${ext} at teams/${color}/${f}` });
+      } else if (magic === 'other') {
+        issues.push({ level: 'warn', message: `Unrecognized image magic for teams/${color}/${f}` });
+      }
+    }
   }
 
   for (const roster of ROSTERS) {
