@@ -11,32 +11,32 @@ function slugify(name: string) {
 // Only list actual committed files to avoid 404s in production.
 export const MEMBER_IMAGES: Record<TeamColor, Record<string, string>> = {
   red: {
-    jimmy: '/teams/red/jimmy.jpg',
-    allie: '/teams/red/allie.png',
-    grams: '/teams/red/grams.png',
+    jimmy: '/captains/jimmy.jpg',
+    allie: '/captains/allie.png', // TODO: replace placeholder with real photo & convert to jpg
+    grams: '/captains/grams.png', // TODO: replace placeholder
   },
   orange: {
-    tyler: '/teams/orange/tyler.png',
-    brandon: '/teams/orange/brandon.png',
-    // zack image missing - fallback will use initial
+    tyler: '/captains/tyler.png', // TODO: replace placeholder
+    brandon: '/captains/brandon.png', // TODO: replace placeholder
+    // zack missing
   },
   yellow: {
-    becca: '/teams/yellow/becca.png',
-    tanner: '/teams/yellow/tanner.png',
+    becca: '/captains/becca.png',
+    tanner: '/captains/tanner.png', // TODO: replace placeholder
   },
   green: {
-    allyssa: '/teams/green/allyssa.jpg',
-    gramps: '/teams/green/gramps.jpg',
-    natalie: '/teams/green/natalie.jpg',
+    allyssa: '/captains/allyssa.jpg',
+    gramps: '/captains/gramps.jpg',
+    natalie: '/captains/natalie.jpg',
   },
   blue: {
-    garrett: '/teams/blue/garrett.jpg',
-    jason: '/teams/blue/jason.jpg',
+    garrett: '/captains/garrett.jpg',
+    jason: '/captains/jason.jpg',
   },
   purple: {
-    kyle: '/teams/purple/kyle.jpg',
-    leah: '/teams/purple/leah.jpg',
-    grammie: '/teams/purple/grammie.jpg',
+    kyle: '/captains/kyle.jpg',
+    leah: '/captains/leah.jpg',
+    grammie: '/captains/grammie.jpg',
   },
 };
 

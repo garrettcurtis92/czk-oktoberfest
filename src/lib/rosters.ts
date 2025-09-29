@@ -29,8 +29,4 @@ export function memberImagePath(color: TeamColor, memberName: string) {
   return `/members/${color}/${slug}.jpg`;
 }
 
-// New preferred path under /public/teams/{color}/{slug}.jpg
-export function teamMemberImagePath(color: TeamColor, memberName: string) {
-  const slug = memberName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-  return `/teams/${color}/${slug}.jpg`;
-}
+// Deprecated: teamMemberImagePath removed after consolidation to /public/captains for all member photos.
