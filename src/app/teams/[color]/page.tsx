@@ -5,7 +5,7 @@ import GlassCard from "@/components/GlassCard";
 import { MemberCard } from "@/components/MemberCard";
 import { getRoster, ROSTERS } from "@/lib/rosters";
 import { notFound } from "next/navigation";
-import { listTeamImageMembers } from "@/lib/team-images";
+import { getMemberImage } from "@/lib/member-images";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -20,12 +20,8 @@ export default async function TeamDetailPage({ params }: { params: Promise<unkno
   const roster = color ? getRoster(color) : undefined;
   if (!roster) return notFound();
   const teamVar = `var(--tw-color-team-${roster.color})`;
-  // Derive members from images folder; if present, these become authoritative for display order.
-  const imageMembers = listTeamImageMembers(roster.color);
-  const imageMap = new Map(imageMembers.map(m => [m.name, m.imagePath]));
-  const imgNames = imageMembers.map(m => m.name);
-  // Merge static roster with image-derived without duplicates, keeping image-backed names first.
-  const mergedMembers = Array.from(new Set([...imgNames, ...roster.members]));
+  // Use static roster order; images resolved via static mapping (no fs at runtime).
+  const mergedMembers = roster.members;
 
   return (
     <main className="p-4 space-y-6">
@@ -44,7 +40,7 @@ export default async function TeamDetailPage({ params }: { params: Promise<unkno
       <div className="grid gap-4 sm:grid-cols-2">
         <CaptainCard roster={roster} />
         {mergedMembers.map(m => (
-          <MemberCard key={m} color={roster.color} name={m} image={imageMap.get(m)} />
+          <MemberCard key={m} color={roster.color} name={m} image={getMemberImage(roster.color, m)} />
         ))}
       </div>
     </main>
