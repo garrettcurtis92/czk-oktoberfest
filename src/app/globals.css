@@ -67,7 +67,7 @@ body {
   border-color: rgba(255,255,255,0.08);
 }
 
-/* Card surface used by team/event/leaderboard/bracket */
+/* Card surface used by team/event/leaderboard */
 .card-surface {
   @apply backdrop-blur;
   background: linear-gradient(

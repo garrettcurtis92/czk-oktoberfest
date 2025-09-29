@@ -398,23 +398,11 @@ function eventAccent(ev: UiEvent) {
 function EventCard({ ev }: { ev: UiEvent }) {
   const isLive = ev.status === "live";
 
-  // Map game titles to specific bracket routes and include eventId
-  let bracketHref: string | undefined;
-  if (ev.type === 'game' && ev.title) {
-    const t = ev.title.toLowerCase();
-    const isCornhole = /cornhole/.test(t);
-    const isPickleball = /pickle\s*ball|pickleball/.test(t);
-    const isPingPong = /ping[- ]?pong/.test(t);
-
-    if (isCornhole) bracketHref = `/brackets/cornhole?eventId=${ev.id}`;
-    else if (isPickleball) bracketHref = `/brackets/pickleball?eventId=${ev.id}`;
-    else if (isPingPong) bracketHref = `/brackets/pingpong?eventId=${ev.id}`;
-  }
+  // Bracket links removed (feature deprecated)
   return (
     <GlassCard
       accent={eventAccent(ev)}
       className={cn("relative overflow-hidden p-4", isLive && "ring-2 ring-team-red/70")}
-      href={bracketHref}
     >
       <div id={`event-${ev.id}`} className="relative">
         {isLive && <LiveProgress ev={ev} />}

@@ -14,7 +14,7 @@ export const ROSTERS: TeamRoster[] = [
   { color: "red", teamName: "Red", captain: "Mandi Kelly", members: ["Jimmy", "Allie", "Grams"], captainImage: "/captains/mandi-kelly.jpg" },
   { color: "yellow", teamName: "Yellow", captain: "Dalton Kelly", members: ["Becca", "Tanner"], captainImage: "/captains/dalton-kelly.jpg" },
   { color: "blue", teamName: "Blue", captain: "Amaryllis Zanotelli", members: ["Garrett", "Jason"], captainImage: "/captains/amaryllis-zanotelli.jpg" },
-  { color: "orange", teamName: "Orange", captain: "Tim Zanotelli", members: ["Tyler", "Brandon"], captainImage: "/captains/tim-zanotelli.jpg" },
+  { color: "orange", teamName: "Orange", captain: "Tim Zanotelli", members: ["Tyler", "Brandon", "Zack"], captainImage: "/captains/tim-zanotelli.jpg" },
   { color: "green", teamName: "Green", captain: "Luke Kelly", members: ["Allyssa", "Gramps", "Natalie"], captainImage: "/captains/luke-kelly.jpg" },
   { color: "purple", teamName: "Purple", captain: "Lexie Curtis", members: ["Kyle", "Leah", "Grammie"], captainImage: "/captains/lexie-curtis.jpg" },
 ];

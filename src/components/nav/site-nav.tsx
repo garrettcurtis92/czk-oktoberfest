@@ -161,7 +161,6 @@ export function BottomTabs() {
     { href: "/", label: "Teams", icon: <User className="h-5 w-5 text-charcoal dark:text-white" /> },
     { href: "/schedule", label: "Schedule", icon: <CalendarDays className="h-5 w-5 text-charcoal dark:text-white" /> },
     { href: "/leaderboard", label: "Scores", icon: <Trophy className="h-5 w-5 text-charcoal dark:text-white" /> },
-    { href: "/brackets", label: "Brackets", icon: <Flag className="h-5 w-5 text-charcoal dark:text-white" /> },
   ];
 
   return (
