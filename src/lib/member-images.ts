@@ -18,7 +18,7 @@ export const MEMBER_IMAGES: Record<TeamColor, Record<string, string>> = {
   orange: {
     tyler: '/captains/tyler.png', // TODO: replace placeholder
     brandon: '/captains/brandon.png', // TODO: replace placeholder
-    // zack missing
+    zack: '/captains/zach.jpg',
   },
   yellow: {
     becca: '/captains/becca.png',
