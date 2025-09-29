@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useTheme } from "next-themes";
 import { Menu, X, Sun, Moon, Monitor } from "lucide-react";
 import { motion, AnimatePresence, useAnimationControls } from "framer-motion";
@@ -146,7 +147,29 @@ export function HamburgerMenu() {
 
             <div className="my-6 h-px bg-black/10 dark:bg-white/10" />
 
-           
+            {/* Admin */}
+            <div className="space-y-3">
+              <h3 className="text-xs font-medium uppercase tracking-wide text-black/60 dark:text-white/60">
+                Admin
+              </h3>
+              <div className="space-y-2">
+                <Link
+                  href="/admin/live"
+                  onClick={() => setIsOpen(false)}
+                  className="w-full flex items-center gap-3 p-3 rounded-xl transition-colors bg-black/[0.03] dark:bg-white/[0.10] hover:bg-black/[0.06] dark:hover:bg-white/[0.14]"
+                >
+                  <span className="font-medium">Live Control</span>
+                </Link>
+                <Link
+                  href="/admin/score"
+                  onClick={() => setIsOpen(false)}
+                  className="w-full flex items-center gap-3 p-3 rounded-xl transition-colors bg-black/[0.03] dark:bg-white/[0.10] hover:bg-black/[0.06] dark:hover:bg-white/[0.14]"
+                >
+                  <span className="font-medium">Score Entry</span>
+                </Link>
+              </div>
+            </div>
+
           </motion.aside>
         )}
       </AnimatePresence>

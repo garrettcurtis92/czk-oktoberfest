@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -52,6 +52,7 @@ function statusAccent(s: Row["status"]) {
 function RowMenu({ id, onEdit, currentStatus }: { id: number; onEdit: () => void; currentStatus: Row["status"] }) {
   const [open, setOpen] = useState(false);
   const statuses: Row["status"][] = ["scheduled", "live", "paused", "finished"];
+
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
@@ -88,6 +89,7 @@ function RowMenu({ id, onEdit, currentStatus }: { id: number; onEdit: () => void
 export default function AdminLiveClient({ rows }: { rows: Row[] }) {
   const [bulkOpen, setBulkOpen] = useState(false);
   const [editId, setEditId] = useState<number | null>(null);
+  const createDetailsRef = useRef<HTMLDetailsElement | null>(null);
 
   // Stable sort (day + time)
   const safeRows = [...rows].sort((a, b) => {
@@ -157,24 +159,53 @@ export default function AdminLiveClient({ rows }: { rows: Row[] }) {
           {/* Create Event inline form */}
         </div>
         <div className="mt-4">
-          <details className="group">
+          <details ref={createDetailsRef} className="group">
             <summary className="cursor-pointer text-sm font-medium mb-2">➕ Create New Event</summary>
-            <form action={createEventAction} className="grid gap-2 md:grid-cols-8 items-end text-sm">
+            <form
+              action={createEventAction}
+              className="grid gap-2 md:grid-cols-8 items-end text-sm"
+              onSubmit={(e) => {
+                // close the details immediately for responsiveness
+                const d = createDetailsRef.current;
+                if (d) d.open = false;
+                // allow default submit to continue
+                // optionally reset form after a short delay so values captured
+                setTimeout(() => {
+                  try { e.currentTarget.reset(); } catch {}
+                }, 50);
+              }}
+            >
               <div className="md:col-span-2 space-y-1">
                 <label className="block text-xs uppercase tracking-wide opacity-70">Title</label>
                 <Input name="title" placeholder="Event title" required />
               </div>
               <div className="space-y-1">
                 <label className="block text-xs uppercase tracking-wide opacity-70">Day</label>
-                <Input name="day" placeholder="2025-10-03" pattern="\\d{4}-\\d{2}-\\d{2}" required />
+                <Input
+                  name="day"
+                  placeholder="2025-10-03"
+                  pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"
+                  inputMode="numeric"
+                  required
+                />
               </div>
               <div className="space-y-1">
                 <label className="block text-xs uppercase tracking-wide opacity-70">Start</label>
-                <Input name="startTime" placeholder="09:00" pattern="\\d{2}:\\d{2}" />
+                <Input
+                  name="startTime"
+                  placeholder="09:00"
+                  pattern="[0-9]{2}:[0-9]{2}"
+                  inputMode="numeric"
+                />
               </div>
               <div className="space-y-1">
                 <label className="block text-xs uppercase tracking-wide opacity-70">End</label>
-                <Input name="endTime" placeholder="10:00" pattern="\\d{2}:\\d{2}" />
+                <Input
+                  name="endTime"
+                  placeholder="10:00"
+                  pattern="[0-9]{2}:[0-9]{2}"
+                  inputMode="numeric"
+                />
               </div>
               <div className="space-y-1">
                 <label className="block text-xs uppercase tracking-wide opacity-70">Location</label>
@@ -260,7 +291,14 @@ export default function AdminLiveClient({ rows }: { rows: Row[] }) {
                           <DialogHeader>
                             <DialogTitle>Edit Event</DialogTitle>
                           </DialogHeader>
-                          <form action={updateEventAction} className="space-y-3 text-sm">
+                          <form
+                            action={updateEventAction}
+                            className="space-y-3 text-sm"
+                            onSubmit={() => {
+                              // close dialog instantly for better UX
+                              setEditId(null);
+                            }}
+                          >
                             <input type="hidden" name="id" value={e.id} />
                             <div className="grid grid-cols-2 gap-3">
                               <label className="space-y-1 col-span-2">
@@ -269,15 +307,33 @@ export default function AdminLiveClient({ rows }: { rows: Row[] }) {
                               </label>
                               <label className="space-y-1">
                                 <span className="block text-xs uppercase opacity-60">Day</span>
-                                <Input name="day" defaultValue={e.day} pattern="\\d{4}-\\d{2}-\\d{2}" required />
+                                <Input
+                                  name="day"
+                                  defaultValue={e.day}
+                                  pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"
+                                  inputMode="numeric"
+                                  required
+                                />
                               </label>
                               <label className="space-y-1">
                                 <span className="block text-xs uppercase opacity-60">Start</span>
-                                <Input name="startTime" defaultValue={e.startTime ?? ''} placeholder="HH:MM" pattern="\\d{2}:\\d{2}" />
+                                <Input
+                                  name="startTime"
+                                  defaultValue={e.startTime ?? ''}
+                                  placeholder="HH:MM"
+                                  pattern="[0-9]{2}:[0-9]{2}"
+                                  inputMode="numeric"
+                                />
                               </label>
                               <label className="space-y-1">
                                 <span className="block text-xs uppercase opacity-60">End</span>
-                                <Input name="endTime" defaultValue={''} placeholder="HH:MM" pattern="\\d{2}:\\d{2}" />
+                                <Input
+                                  name="endTime"
+                                  defaultValue={''}
+                                  placeholder="HH:MM"
+                                  pattern="[0-9]{2}:[0-9]{2}"
+                                  inputMode="numeric"
+                                />
                               </label>
                               <label className="space-y-1 col-span-2">
                                 <span className="block text-xs uppercase opacity-60">Location</span>
